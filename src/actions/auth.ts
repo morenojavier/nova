@@ -2,88 +2,45 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+
+// MOCK MODE: Acciones de auth sin conexión a Supabase.
+// Cuando la BD esté lista, restaurar la lógica real usando el cliente de Supabase.
+
+async function fakeLatency(ms = 800) {
+  await new Promise(resolve => setTimeout(resolve, ms))
+}
 
 export async function login(_formData: FormData): Promise<{ error?: string } | never> {
-  // Mock login Bypass para MVP
-  // Simulando loading de network...
-  await new Promise(resolve => setTimeout(resolve, 800))
+  await fakeLatency()
   revalidatePath('/', 'layout')
   redirect('/dashboard')
 }
 
-export async function signup(formData: FormData) {
-  const supabase = await createClient()
-
-  const { error } = await supabase.auth.signUp({
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
-  })
-
-  if (error) {
-    return { error: error.message }
-  }
-
+export async function signup(_formData: FormData): Promise<{ error?: string } | never> {
+  await fakeLatency()
   revalidatePath('/', 'layout')
   redirect('/check-email')
 }
 
 export async function signout() {
-  const supabase = await createClient()
-  await supabase.auth.signOut()
+  await fakeLatency(300)
   revalidatePath('/', 'layout')
   redirect('/login')
 }
 
-export async function resetPassword(formData: FormData) {
-  const supabase = await createClient()
-  const email = formData.get('email') as string
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/update-password`,
-  })
-
-  if (error) {
-    return { error: error.message }
-  }
-
+export async function resetPassword(_formData: FormData): Promise<{ success?: boolean; error?: string }> {
+  await fakeLatency()
   return { success: true }
 }
 
-export async function updatePassword(formData: FormData) {
-  const supabase = await createClient()
-  const password = formData.get('password') as string
-
-  const { error } = await supabase.auth.updateUser({ password })
-
-  if (error) {
-    return { error: error.message }
-  }
-
+export async function updatePassword(_formData: FormData): Promise<{ error?: string } | never> {
+  await fakeLatency()
   revalidatePath('/', 'layout')
   redirect('/dashboard')
 }
 
-export async function updateProfile(formData: FormData) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { error: 'Not authenticated' }
-  }
-
-  const { error } = await supabase
-    .from('profiles')
-    .update({
-      full_name: formData.get('full_name') as string,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', user.id)
-
-  if (error) {
-    return { error: error.message }
-  }
-
+export async function updateProfile(_formData: FormData): Promise<{ success?: boolean; error?: string }> {
+  await fakeLatency()
   revalidatePath('/', 'layout')
   return { success: true }
 }

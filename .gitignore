@@ -2,9 +2,10 @@
 /node_modules
 /.pnp
 .pnp.js
-yarn.lock
-package-lock.json
-pnpm-lock.yaml
+# Lockfiles: mantén UNO (package-lock.json) para builds reproducibles en Vercel
+# yarn.lock
+# package-lock.json
+# pnpm-lock.yaml
 
 # Testing
 /coverage

@@ -1,170 +1,91 @@
-# SaaS V4
+# Nova — Plataforma de Gestión de Seguros
 
-Template production-ready para crear aplicaciones SaaS con desarrollo asistido por IA. Filosofia Agent-First: el usuario dice que quiere, el agente construye todo.
+Plataforma web para agentes y agencias de seguros en México. Incluye gestión de clientes, pólizas, flotillas, cotizaciones multi-aseguradora y reportes.
 
-## Que incluye
+## Stack
 
-- Next.js 16 (App Router) + TypeScript
-- Supabase (Database + Auth + RLS)
-- Tailwind CSS + shadcn/ui
-- 19 Skills de Claude Code (V4 Skills 2.0)
-- Playwright CLI para QA automatizado
-- AI Templates (Vercel AI SDK v5 + OpenRouter)
-- 5 Design Systems listos para usar
-- Arquitectura Feature-First optimizada para IA
-- Auto-Blindaje: el sistema aprende de cada error
+- **Framework**: Next.js 16 + React 19 + TypeScript
+- **Styling**: Tailwind CSS 3.4
+- **Backend**: Supabase (Auth + DB + RLS)
+- **Validación**: Zod
+- **Animaciones**: Framer Motion
+- **Iconos**: Lucide React
 
-## Quick Start
-
-### 1. Instalar
+## Desarrollo local
 
 ```bash
+# 1. Instalar dependencias
 npm install
-```
 
-### 2. Variables de Entorno
+# 2. Copiar variables de entorno
+cp .env.local.example .env.local
+# Editar .env.local con tus credenciales de Supabase
 
-```bash
-cp .env.example .env.local
-# Editar con credenciales de Supabase
-```
-
-### 3. MCPs (Opcional)
-
-```bash
-cp .claude/example.mcp.json .mcp.json
-# Editar con project ref de Supabase
-```
-
-### 4. Desarrollar
-
-```bash
+# 3. Iniciar servidor de desarrollo
 npm run dev
-# Auto-detecta puerto disponible (3000-3006)
 ```
 
-## Tech Stack
+Abre [http://localhost:3000](http://localhost:3000).
 
-```yaml
-Runtime: Node.js + TypeScript
-Framework: Next.js 16 (App Router)
-Database: PostgreSQL/Supabase
-Styling: Tailwind CSS 3.4
-Components: shadcn/ui
-State: Zustand
-Validation: Zod
-AI Engine: Vercel AI SDK v5 + OpenRouter
-Testing: Playwright CLI + MCP
-Deploy: Vercel
+## Variables de entorno
+
+Copia `.env.local.example` a `.env.local` y configura:
+
+| Variable | Descripción |
+|----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto en Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Anon key de Supabase |
+| `NEXT_PUBLIC_SITE_URL` | URL pública del sitio (para OAuth redirects) |
+
+## Scripts
+
+```bash
+npm run dev      # Desarrollo (Turbopack)
+npm run build    # Build de producción
+npm run start    # Iniciar build de producción
+npm run lint     # Linter
 ```
 
-## Arquitectura Feature-First
+## Deploy en Vercel
+
+1. Importa el repo desde [vercel.com/new](https://vercel.com/new)
+2. Agrega las variables de entorno (ver arriba)
+3. Deploy — Vercel detecta Next.js automáticamente
+
+Después del primer deploy, actualiza `NEXT_PUBLIC_SITE_URL` con la URL real y configura esa URL en Supabase Dashboard → Authentication → URL Configuration.
+
+## Estructura
 
 ```
 src/
-├── app/                      # Next.js App Router
-│   ├── (auth)/              # Rutas auth
-│   ├── (main)/              # Rutas principales
-│   └── layout.tsx
-│
-├── features/                 # Organizadas por funcionalidad
-│   └── [feature]/
-│       ├── components/
-│       ├── hooks/
-│       ├── services/
-│       ├── types/
-│       └── store/
-│
-└── shared/                   # Codigo reutilizable
-    ├── components/
-    ├── hooks/
-    ├── lib/
-    └── types/
+├── app/
+│   ├── (auth)/            # Rutas de autenticación
+│   └── (main)/            # App principal con sidebar
+│       ├── dashboard/     # Reportes
+│       ├── clients/
+│       ├── policies/
+│       ├── insurers/
+│       ├── fleets/
+│       ├── quotes/new/
+│       └── users/
+├── features/              # Lógica por dominio
+│   ├── auth/
+│   ├── quotes/
+│   └── users/
+├── components/            # UI compartida
+│   ├── ui/                # Primitivos
+│   └── layout/            # Sidebar, etc
+├── lib/
+│   └── supabase/          # Clients de Supabase
+└── actions/               # Server Actions
 ```
 
-## Skills (19 total)
+## Features principales
 
-### Para el usuario
-
-| Skill | Que hace |
-|-------|----------|
-| `/new-app` | Entrevista de negocio → BUSINESS_LOGIC.md |
-| `/landing` | Landing page de alta conversion |
-| `/add-login` | Auth completo (Email + Google OAuth + profiles + RLS) |
-| `/bucle-agentico` | Implementar features complejas por fases |
-| `/sprint` | Tareas rapidas sin planificacion |
-| `/prp` | Planificar features complejas antes de implementar |
-| `/ai [template]` | Agregar IA: chat, RAG, vision, tools |
-| `/qa` | QA automatizado con Playwright CLI |
-| `/primer` | Inicializar contexto del proyecto |
-| `/update-sf` | Actualizar a ultima version |
-| `/eject-sf` | Remover SaaS (destructivo) |
-| `/skill-creator` | Crear nuevos skills |
-
-### Automaticos (Claude los activa segun la tarea)
-
-backend, frontend, supabase-admin, codebase-analyst, vercel-deployer, documentacion, calidad
-
-## AI Templates
-
-Bloques LEGO para construir features de IA con Vercel AI SDK v5 + OpenRouter:
-
-| Template | Que hace |
-|----------|----------|
-| setup-base | Configuracion inicial |
-| chat | Chat streaming con useChat |
-| web-search | Busqueda con :online |
-| historial | Persistencia en Supabase |
-| vision | Analisis de imagenes |
-| tools | Funciones/herramientas |
-| rag | pgvector + embeddings |
-| single-call | generateText() puntual |
-| structured-outputs | generateObject() con Zod |
-| generative-ui | LLM decide que componente renderizar |
-
-## Design Systems
-
-5 sistemas visuales listos en `.claude/design-systems/`:
-
-- **Liquid Glass** - iOS-like, transparencias
-- **Gradient Mesh** - Degradados fluidos
-- **Neumorphism** - Soft UI, sombras suaves
-- **Bento Grid** - Grids asimetricos
-- **Neobrutalism** - Bold, bordes duros
-
-## Comandos
-
-```bash
-npm run dev          # Desarrollo (auto-port 3000-3006)
-npm run build        # Build produccion
-npm run typecheck    # TypeScript check
-npm run lint         # ESLint
-```
-
-## Deploy
-
-```bash
-# Vercel (recomendado)
-npm install -g vercel
-vercel
-```
-
-Variables en Vercel Dashboard:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-## Estructura .claude/
-
-```
-.claude/
-├── skills/              # 19 Skills (V4 Skills 2.0)
-├── PRPs/                # Product Requirements Proposals
-│   │   └── references/  # AI Templates (11 bloques)
-├── design-systems/      # 5 sistemas de diseno
-├── hooks/               # Scripts en eventos
-└── example.mcp.json     # Config de MCPs
-```
-
----
-
-**SaaS V4** | Agent-First. Todo es un Skill.
+- Autenticación con Supabase (Email + Google OAuth ready)
+- Dashboard de reportes con 6 vistas (por aseguradora / grupo / agencia y sus cruces)
+- CRUD de clientes con historial por vehículo y pagos
+- Comparador de 7 aseguradoras (GNP, CHUBB, HDI, Quálitas, Mapfre, Zurich, AXA)
+- Wizard de cotización en 4 pasos con confirmación
+- Gestión de flotillas con documentación legal (CURP, RFC, Acta constitutiva, etc.)
+- Sistema de usuarios con 4 roles jerárquicos

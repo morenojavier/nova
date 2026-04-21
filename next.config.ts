@@ -1,9 +1,9 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  // Activa el MCP server en /_next/mcp (Next.js 16+)
+  // MCP server solo en desarrollo (evita overhead en producción)
   experimental: {
-    mcpServer: true,
+    mcpServer: process.env.NODE_ENV === 'development',
   },
 }
 
