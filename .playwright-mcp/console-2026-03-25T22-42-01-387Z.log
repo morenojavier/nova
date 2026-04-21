@@ -1,0 +1,100 @@
+[     532ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/quotes/new:0
+[     680ms] Error: ./src/components/ui/label.tsx:4:1
+Module not found: Can't resolve '@radix-ui/react-label'
+  2 |
+  3 | import * as React from "react"
+> 4 | import * as LabelPrimitive from "@radix-ui/react-label"
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import { cva, type VariantProps } from "class-variance-authority"
+  6 |
+  7 | import { cn } from "@/lib/utils"
+
+
+
+Import traces:
+  Client Component Browser:
+    ./src/components/ui/label.tsx [Client Component Browser]
+    ./src/app/(main)/quotes/new/page.tsx [Client Component Browser]
+    ./src/app/(main)/quotes/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/ui/label.tsx [Client Component SSR]
+    ./src/app/(main)/quotes/new/page.tsx [Client Component SSR]
+    ./src/app/(main)/quotes/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./src/components/ui/label.tsx:4:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at Object.getCompilationErrors (file:///Users/javier-macmini/Developer/Proyectos/setup-plataformas/node_modules/next/dist/server/dev/hot-reloader-turbopack.js:1008:59)
+    at DevBundlerService.getCompilationError (file:///Users/javier-macmini/Developer/Proyectos/setup-plataformas/node_modules/next/dist/server/lib/dev-bundler-service.js:44:55)
+    at DevServer.getCompilationError (file:///Users/javier-macmini/Developer/Proyectos/setup-plataformas/node_modules/next/dist/server/dev/next-dev-server.js:706:42)
+    at DevServer.findPageComponents (file:///Users/javier-macmini/Developer/Proyectos/setup-plataformas/node_modules/next/dist/server/dev/next-dev-server.js:676:43)
+    at async DevServer.renderErrorToResponseImpl (file:///Users/javier-macmini/Developer/Proyectos/setup-plataformas/node_modules/next/dist/server/base-server.js:1733:26)
+[     679ms] [ERROR] ./src/components/ui/label.tsx:4:1
+Module not found: Can't resolve '@radix-ui/react-label'
+  2 |
+  3 | import * as React from "react"
+> 4 | import * as LabelPrimitive from "@radix-ui/react-label"
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import { cva, type VariantProps } from "class-variance-authority"
+  6 |
+  7 | import { cn } from "@/lib/utils"
+
+Import traces:
+  Client Component Browser:
+    ./src/components/ui/label.tsx [Client Component Browser]
+    ./src/app/(main)/quotes/new/page.tsx [Client Component Browser]
+    ./src/app/(main)/quotes/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/ui/label.tsx [Client Component SSR]
+    ./src/app/(main)/quotes/new/page.tsx [Client Component SSR]
+    ./src/app/(main)/quotes/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_b3fb3b5f._.js:1920
+[     730ms] [ERROR] ./src/components/ui/label.tsx:4:1
+Module not found: Can't resolve '@radix-ui/react-label'
+  2 |
+  3 | import * as React from "react"
+> 4 | import * as LabelPrimitive from "@radix-ui/react-label"
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import { cva, type VariantProps } from "class-variance-authority"
+  6 |
+  7 | import { cn } from "@/lib/utils"
+
+Import traces:
+  Client Component Browser:
+    ./src/components/ui/label.tsx [Client Component Browser]
+    ./src/app/(main)/quotes/new/page.tsx [Client Component Browser]
+    ./src/app/(main)/quotes/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/ui/label.tsx [Client Component SSR]
+    ./src/app/(main)/quotes/new/page.tsx [Client Component SSR]
+    ./src/app/(main)/quotes/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_b3fb3b5f._.js:1920
+[  873452ms] [ERROR] ./src/components/ui/label.tsx:4:1
+Module not found: Can't resolve '@radix-ui/react-label'
+  2 |
+  3 | import * as React from "react"
+> 4 | import * as LabelPrimitive from "@radix-ui/react-label"
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  5 | import { cva, type VariantProps } from "class-variance-authority"
+  6 |
+  7 | import { cn } from "@/lib/utils"
+
+Import traces:
+  Client Component Browser:
+    ./src/components/ui/label.tsx [Client Component Browser]
+    ./src/app/(main)/quotes/new/page.tsx [Client Component Browser]
+    ./src/app/(main)/quotes/new/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/ui/label.tsx [Client Component SSR]
+    ./src/app/(main)/quotes/new/page.tsx [Client Component SSR]
+    ./src/app/(main)/quotes/new/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_b3fb3b5f._.js:1920
