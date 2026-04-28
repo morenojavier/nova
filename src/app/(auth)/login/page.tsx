@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { LoginForm } from '@/features/auth/components'
 
 export const metadata = {
@@ -14,13 +13,6 @@ export default function LoginPage() {
       </div>
 
       <LoginForm />
-
-      <p className="text-center text-sm text-muted-foreground">
-        ¿No tienes cuenta?{' '}
-        <Link href="/signup" className="font-medium text-accent hover:underline">
-          Regístrate
-        </Link>
-      </p>
     </div>
   )
 }

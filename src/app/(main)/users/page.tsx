@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { Search, Plus, MoreHorizontal, X, UserCog, Users, Shield, Building2, Briefcase } from 'lucide-react'
+import { Search, Plus, MoreHorizontal, X, Mail, Users, Shield, Building2, Briefcase } from 'lucide-react'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -21,8 +21,8 @@ interface PlatformUser {
   email: string
   phone: string
   role: UserRole
-  group?: string
-  agency?: string
+  groups: string[]
+  agencies: string[]
   status: UserStatus
   createdAt: string
 }
@@ -45,25 +45,30 @@ const MOCK_AGENCIES_BY_GROUP: Record<string, string[]> = {
   'Grupo Bajío Motors': ['Honda León', 'Mazda Querétaro'],
 }
 
+const ALL_AGENCIES = Object.values(MOCK_AGENCIES_BY_GROUP).flat()
+
 const INITIAL_USERS: PlatformUser[] = [
-  // Super Admin
+  // Super Admin — all groups, two agencies to demo multi-assignment
   {
     id: '1',
     name: 'Javier Moreno Castillo',
     email: 'javier.moreno@novaplataforma.mx',
     phone: '55 1000 0001',
     role: 'super_admin',
+    groups: MOCK_GROUPS,
+    agencies: ['Toyota Monterrey', 'Mazda Polanco'],
     status: 'Activo',
     createdAt: '01/01/2024',
   },
-  // Group Leads
+  // Group Leads — demo: Arturo covers two groups
   {
     id: '2',
     name: 'Arturo Benítez Valencia',
     email: 'abenitez@gruponorte.mx',
     phone: '81 1234 5678',
     role: 'group_lead',
-    group: 'Grupo Automotriz del Norte',
+    groups: ['Grupo Automotriz del Norte', 'Grupo Bajío Motors'],
+    agencies: ['Toyota Monterrey', 'Honda León'],
     status: 'Activo',
     createdAt: '15/03/2022',
   },
@@ -73,19 +78,20 @@ const INITIAL_USERS: PlatformUser[] = [
     email: 'icruz@premiummotors.mx',
     phone: '55 9876 5432',
     role: 'group_lead',
-    group: 'Grupo Premium Motors',
+    groups: ['Grupo Premium Motors'],
+    agencies: ['Mazda Polanco'],
     status: 'Activo',
     createdAt: '08/07/2023',
   },
-  // Agency Managers
+  // Agency Managers — demo: Ricardo covers two agencies
   {
     id: '4',
     name: 'Ricardo Peña Saucedo',
     email: 'rpsaucedo@gruponorte.mx',
     phone: '81 2345 6789',
     role: 'agency_manager',
-    group: 'Grupo Automotriz del Norte',
-    agency: 'Honda San Pedro',
+    groups: ['Grupo Automotriz del Norte'],
+    agencies: ['Honda San Pedro', 'Nissan Apodaca'],
     status: 'Activo',
     createdAt: '20/06/2022',
   },
@@ -95,8 +101,8 @@ const INITIAL_USERS: PlatformUser[] = [
     email: 'pesquivel@centrooccidente.mx',
     phone: '33 3456 7890',
     role: 'agency_manager',
-    group: 'Grupo Centro Occidente',
-    agency: 'Ford Zapopan',
+    groups: ['Grupo Centro Occidente'],
+    agencies: ['Ford Zapopan'],
     status: 'Activo',
     createdAt: '03/04/2022',
   },
@@ -106,8 +112,8 @@ const INITIAL_USERS: PlatformUser[] = [
     email: 'dmendoza@peninsula.mx',
     phone: '99 3692 5814',
     role: 'agency_manager',
-    group: 'Grupo Península',
-    agency: 'Toyota Mérida',
+    groups: ['Grupo Península'],
+    agencies: ['Toyota Mérida'],
     status: 'Activo',
     createdAt: '12/10/2023',
   },
@@ -118,8 +124,8 @@ const INITIAL_USERS: PlatformUser[] = [
     email: 'mfuentes@gruponorte.mx',
     phone: '81 4567 8901',
     role: 'seller',
-    group: 'Grupo Automotriz del Norte',
-    agency: 'Toyota Monterrey',
+    groups: ['Grupo Automotriz del Norte'],
+    agencies: ['Toyota Monterrey'],
     status: 'Activo',
     createdAt: '10/04/2023',
   },
@@ -129,8 +135,8 @@ const INITIAL_USERS: PlatformUser[] = [
     email: 'vherrera@premiummotors.mx',
     phone: '55 5678 9012',
     role: 'seller',
-    group: 'Grupo Premium Motors',
-    agency: 'Mazda Polanco',
+    groups: ['Grupo Premium Motors'],
+    agencies: ['Mazda Polanco'],
     status: 'Activo',
     createdAt: '22/08/2023',
   },
@@ -140,8 +146,8 @@ const INITIAL_USERS: PlatformUser[] = [
     email: 'esalinas@centrooccidente.mx',
     phone: '33 6789 0123',
     role: 'seller',
-    group: 'Grupo Centro Occidente',
-    agency: 'Chevrolet Guadalajara',
+    groups: ['Grupo Centro Occidente'],
+    agencies: ['Chevrolet Guadalajara'],
     status: 'Inactivo',
     createdAt: '05/11/2022',
   },
@@ -151,8 +157,8 @@ const INITIAL_USERS: PlatformUser[] = [
     email: 'ctorres@centrooccidente.mx',
     phone: '33 7890 1234',
     role: 'seller',
-    group: 'Grupo Centro Occidente',
-    agency: 'Honda Providencia',
+    groups: ['Grupo Centro Occidente'],
+    agencies: ['Honda Providencia'],
     status: 'Activo',
     createdAt: '14/02/2024',
   },
@@ -162,8 +168,8 @@ const INITIAL_USERS: PlatformUser[] = [
     email: 'rnavarro@peninsula.mx',
     phone: '99 8901 2345',
     role: 'seller',
-    group: 'Grupo Península',
-    agency: 'VW Cancún',
+    groups: ['Grupo Península'],
+    agencies: ['VW Cancún'],
     status: 'Activo',
     createdAt: '08/03/2024',
   },
@@ -213,41 +219,42 @@ function NewUserModal({
     email: '',
     phone: '',
     role: 'seller' as UserRole,
-    group: '',
-    agency: '',
+    groups: [] as string[],
+    agencies: [] as string[],
     status: 'Activo' as UserStatus,
   })
 
   function update<K extends keyof typeof form>(field: K, value: (typeof form)[K]) {
-    setForm(prev => {
-      const next = { ...prev, [field]: value }
-      // Reset cascading fields when role or group changes
-      if (field === 'role') {
-        next.group = ''
-        next.agency = ''
-      }
-      if (field === 'group') {
-        next.agency = ''
-      }
-      return next
-    })
+    setForm(prev => ({ ...prev, [field]: value }))
   }
 
-  const availableAgencies = form.group ? (MOCK_AGENCIES_BY_GROUP[form.group] ?? []) : []
+  function toggleGroup(g: string) {
+    setForm(prev => ({
+      ...prev,
+      groups: prev.groups.includes(g)
+        ? prev.groups.filter(x => x !== g)
+        : [...prev.groups, g],
+    }))
+  }
+
+  function toggleAgency(a: string) {
+    setForm(prev => ({
+      ...prev,
+      agencies: prev.agencies.includes(a)
+        ? prev.agencies.filter(x => x !== a)
+        : [...prev.agencies, a],
+    }))
+  }
 
   const fullName = `${form.firstName} ${form.paternalLastName} ${form.maternalLastName}`.trim()
-
-  // Strict gating: group selector enabled only for group_lead; agency selector only for agency_manager
-  const canSelectGroup = form.role === 'group_lead'
-  const canSelectAgency = form.role === 'agency_manager'
 
   const isValid =
     form.firstName.trim().length >= 2 &&
     form.paternalLastName.trim().length >= 2 &&
     form.email.includes('@') &&
     form.phone.replace(/\D/g, '').length >= 10 &&
-    (!canSelectGroup || form.group !== '') &&
-    (!canSelectAgency || form.agency !== '')
+    form.groups.length >= 1 &&
+    form.agencies.length >= 1
 
   function handleSave() {
     onSave({
@@ -256,8 +263,8 @@ function NewUserModal({
       email: form.email,
       phone: form.phone,
       role: form.role,
-      group: form.group || undefined,
-      agency: form.agency || undefined,
+      groups: form.groups,
+      agencies: form.agencies,
       status: form.status,
       createdAt: new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' }),
     })
@@ -291,37 +298,31 @@ function NewUserModal({
 
         {/* Form */}
         <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-          {/* Role selector */}
-          <div className="space-y-1.5">
-            <Label>Rol</Label>
-            <select
-              value={form.role}
-              onChange={(e) => update('role', e.target.value as UserRole)}
-              className={selectClass}
-            >
-              {roles.map((r) => (
-                <option key={r} value={r}>{ROLE_LABELS[r]}</option>
-              ))}
-            </select>
-            <p className="text-xs text-muted-foreground">
-              {form.role === 'super_admin' && 'Acceso total al sistema'}
-              {form.role === 'group_lead' && 'Administra un grupo'}
-              {form.role === 'agency_manager' && 'Administra una agencia'}
-              {form.role === 'seller' && 'Vendedor asignado a una agencia'}
-            </p>
+          {/* 1. Email */}
+          <div className="space-y-1">
+            <Label className="text-xs">Correo electrónico</Label>
+            <Input
+              type="email"
+              value={form.email}
+              onChange={(e) => update('email', e.target.value)}
+              placeholder="correo@ejemplo.com"
+              className="h-10"
+            />
           </div>
 
-          {/* Name fields */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="space-y-1">
-              <Label className="text-xs">Nombre(s)</Label>
-              <Input
-                value={form.firstName}
-                onChange={(e) => update('firstName', e.target.value)}
-                placeholder="Nombre"
-                className="h-10"
-              />
-            </div>
+          {/* 2. Nombre */}
+          <div className="space-y-1">
+            <Label className="text-xs">Nombre(s)</Label>
+            <Input
+              value={form.firstName}
+              onChange={(e) => update('firstName', e.target.value)}
+              placeholder="Nombre"
+              className="h-10"
+            />
+          </div>
+
+          {/* 3. Apellidos */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label className="text-xs">Apellido paterno</Label>
               <Input
@@ -342,67 +343,119 @@ function NewUserModal({
             </div>
           </div>
 
-          {/* Contact */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label className="text-xs">Correo electrónico</Label>
-              <Input
-                type="email"
-                value={form.email}
-                onChange={(e) => update('email', e.target.value)}
-                placeholder="correo@ejemplo.com"
-                className="h-10"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Teléfono</Label>
-              <Input
-                type="tel"
-                inputMode="numeric"
-                maxLength={10}
-                value={form.phone}
-                onChange={(e) => update('phone', e.target.value.replace(/\D/g, ''))}
-                placeholder="10 dígitos"
-                className="h-10"
-              />
-            </div>
+          {/* 4. Teléfono */}
+          <div className="space-y-1">
+            <Label className="text-xs">Teléfono</Label>
+            <Input
+              type="tel"
+              inputMode="numeric"
+              maxLength={10}
+              value={form.phone}
+              onChange={(e) => update('phone', e.target.value.replace(/\D/g, ''))}
+              placeholder="10 dígitos"
+              className="h-10"
+            />
           </div>
 
-          {/* Group selector — only shown for group_lead */}
-          {canSelectGroup && (
-            <div className="space-y-1">
-              <Label className="text-xs">Grupo</Label>
-              <select
-                value={form.group}
-                onChange={(e) => update('group', e.target.value)}
-                className={selectClass}
-              >
-                <option value="">Selecciona un grupo</option>
-                {MOCK_GROUPS.map(g => (
-                  <option key={g} value={g}>{g}</option>
-                ))}
-              </select>
-            </div>
-          )}
+          {/* 5. Rol */}
+          <div className="space-y-1.5">
+            <Label>Rol</Label>
+            <select
+              value={form.role}
+              onChange={(e) => update('role', e.target.value as UserRole)}
+              className={selectClass}
+            >
+              {roles.map((r) => (
+                <option key={r} value={r}>{ROLE_LABELS[r]}</option>
+              ))}
+            </select>
+            <p className="text-xs text-muted-foreground">
+              {form.role === 'super_admin' && 'Acceso total al sistema'}
+              {form.role === 'group_lead' && 'Administra un grupo'}
+              {form.role === 'agency_manager' && 'Administra una agencia'}
+              {form.role === 'seller' && 'Vendedor asignado a una agencia'}
+            </p>
+          </div>
 
-          {/* Agency selector — only shown for agency_manager */}
-          {canSelectAgency && (
-            <div className="space-y-1">
-              <Label className="text-xs">Agencia</Label>
-              <select
-                value={form.agency}
-                onChange={(e) => update('agency', e.target.value)}
-                className={selectClass}
-              >
-                <option value="">Selecciona una agencia</option>
-                {Object.values(MOCK_AGENCIES_BY_GROUP).flat().map(a => (
-                  <option key={a} value={a}>{a}</option>
+          {/* 6. Grupos (multi-select) */}
+          <div className="space-y-1.5">
+            <Label className="text-xs">Grupo(s) <span className="text-destructive">*</span></Label>
+            {form.groups.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {form.groups.map(g => (
+                  <span
+                    key={g}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20"
+                  >
+                    {g}
+                    <button
+                      type="button"
+                      onClick={() => toggleGroup(g)}
+                      aria-label={`Quitar ${g}`}
+                      className="hover:text-destructive transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
                 ))}
-              </select>
-            </div>
-          )}
+              </div>
+            )}
+            <select
+              value=""
+              onChange={(e) => { if (e.target.value) toggleGroup(e.target.value) }}
+              className={selectClass}
+            >
+              <option value="">Añadir grupo...</option>
+              {MOCK_GROUPS.filter(g => !form.groups.includes(g)).map(g => (
+                <option key={g} value={g}>{g}</option>
+              ))}
+            </select>
+            <p className="text-xs text-muted-foreground">Selecciona uno o más</p>
+            {form.groups.length === 0 && (
+              <p className="text-xs text-destructive">Selecciona al menos un grupo</p>
+            )}
+          </div>
 
-          {/* Status toggle */}
+          {/* 7. Agencias (multi-select) */}
+          <div className="space-y-1.5">
+            <Label className="text-xs">Agencia(s) <span className="text-destructive">*</span></Label>
+            {form.agencies.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {form.agencies.map(a => (
+                  <span
+                    key={a}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20"
+                  >
+                    {a}
+                    <button
+                      type="button"
+                      onClick={() => toggleAgency(a)}
+                      aria-label={`Quitar ${a}`}
+                      className="hover:text-destructive transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <select
+              value=""
+              onChange={(e) => { if (e.target.value) toggleAgency(e.target.value) }}
+              className={selectClass}
+            >
+              <option value="">Añadir agencia...</option>
+              {ALL_AGENCIES.filter(a => !form.agencies.includes(a)).map(a => (
+                <option key={a} value={a}>{a}</option>
+              ))}
+            </select>
+            <p className="text-xs text-muted-foreground">Selecciona uno o más</p>
+            {form.agencies.length === 0 && (
+              <p className="text-xs text-destructive">Selecciona al menos una agencia</p>
+            )}
+          </div>
+
+          {/* 8. Estado */}
           <div className="space-y-2">
             <Label className="text-xs">Estado</Label>
             <div className="flex gap-2">
@@ -426,14 +479,19 @@ function NewUserModal({
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t flex gap-3 justify-end bg-slate-50">
-          <Button variant="outline" onClick={onClose}>
-            Cancelar
-          </Button>
-          <Button onClick={handleSave} disabled={!isValid} className="gap-2">
-            <UserCog className="w-4 h-4" />
-            Guardar Usuario
-          </Button>
+        <div className="p-4 border-t flex flex-col gap-2 bg-slate-50">
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSave} disabled={!isValid} className="gap-2">
+              <Mail className="w-4 h-4" />
+              Validar Usuario
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground text-right">
+            Se enviará un correo al usuario para validar su cuenta.
+          </p>
         </div>
       </div>
     </div>
@@ -628,16 +686,31 @@ export default function UsersPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      {user.agency ? (
-                        <div>
-                          <p className="text-sm font-medium text-foreground">{user.agency}</p>
-                          <p className="text-xs text-muted-foreground">{user.group}</p>
-                        </div>
-                      ) : user.group ? (
-                        <p className="text-sm font-medium text-foreground">{user.group}</p>
-                      ) : (
-                        <span className="text-xs text-muted-foreground italic">—</span>
-                      )}
+                      <div className="space-y-0.5">
+                        {user.agencies.length > 0 && (
+                          <p className="text-sm font-medium text-foreground truncate max-w-[180px]">
+                            {user.agencies[0]}
+                            {user.agencies.length > 1 && (
+                              <span className="ml-1 text-xs text-muted-foreground font-normal">
+                                +{user.agencies.length - 1} más
+                              </span>
+                            )}
+                          </p>
+                        )}
+                        {user.groups.length > 0 && (
+                          <p className="text-xs text-muted-foreground truncate max-w-[180px]">
+                            {user.groups[0]}
+                            {user.groups.length > 1 && (
+                              <span className="ml-1 font-normal">
+                                +{user.groups.length - 1} más
+                              </span>
+                            )}
+                          </p>
+                        )}
+                        {user.agencies.length === 0 && user.groups.length === 0 && (
+                          <span className="text-xs text-muted-foreground italic">—</span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className={cn('text-xs font-medium', STATUS_STYLES[user.status])}>
