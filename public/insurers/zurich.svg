@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="white"/>
+  <circle cx="100" cy="80" r="38" fill="#003399"/>
+  <text x="100" y="98" font-family="Georgia, serif" font-size="48" font-weight="700" fill="white" text-anchor="middle">Z</text>
+  <text x="100" y="160" font-family="'Helvetica Neue', Arial, sans-serif" font-size="22" letter-spacing="4" fill="#003399" text-anchor="middle" font-weight="700">ZURICH</text>
+</svg>

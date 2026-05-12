@@ -113,7 +113,7 @@ const COMMISSION_LABELS: { key: keyof AgencyCommissions; label: string }[] = [
   { key: 'bonoCartera', label: 'Bono Cartera' },
   { key: 'bonoIntegral', label: 'Bono Integral' },
   { key: 'udi', label: 'UDI' },
-  { key: 'intervita', label: 'Intervita' },
+  { key: 'intervita', label: 'Partner' },
   { key: 'nova', label: 'NOVA' },
 ]
 
@@ -299,7 +299,7 @@ function NewAgencyModal({
     { key: 'bonoCartera', label: 'Bono Cartera' },
     { key: 'bonoIntegral', label: 'Bono Integral' },
     { key: 'udi', label: 'UDI' },
-    { key: 'intervita', label: 'Intervita' },
+    { key: 'intervita', label: 'Partner' },
     { key: 'nova', label: 'NOVA' },
   ]
 

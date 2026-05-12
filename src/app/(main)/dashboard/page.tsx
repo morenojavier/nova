@@ -2,13 +2,13 @@
 
 import { useState, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { DateRangePicker, type DateRange } from '@/components/ui/date-range-picker'
+import { InsurerLogo } from '@/components/ui/insurer-logo'
 import {
-    DollarSign, Wallet, Gift, TrendingUp, Shield, FileText, Percent,
+    DollarSign, Wallet, Gift, TrendingUp, Shield, FileText,
     Award, ChevronDown, Building2, Briefcase, ShieldCheck, Download,
     Search, ChevronLeft, ChevronRight,
 } from 'lucide-react'
@@ -179,13 +179,12 @@ function scaleRow(row: RowData, factor: number): RowData {
 
 const formatMXN = (n: number) => '$' + Math.round(n).toLocaleString('es-MX')
 const formatMXNWithUnit = (n: number) => formatMXN(n) + ' MXN'
-const formatPct = (n: number) => n.toFixed(1) + '%'
 
 /* ═══════════════════════════════════════════════════════════════════════
    Shared UI blocks
    ═══════════════════════════════════════════════════════════════════════ */
 
-function MetricsGrid({ m, participation }: { m: Metrics; participation?: number }) {
+function MetricsGrid({ m }: { m: Metrics }) {
     const ingreso = sumIngreso(m)
 
     const tiles: { label: string; value: string; icon: React.ComponentType<{ className?: string }>; tint: string; highlight?: boolean }[] = [
@@ -199,10 +198,6 @@ function MetricsGrid({ m, participation }: { m: Metrics; participation?: number 
         { label: 'UDI', value: formatMXNWithUnit(m.udi), icon: TrendingUp, tint: 'text-accent bg-accent/10' },
         { label: 'Número de Pólizas', value: m.polizas.toLocaleString('es-MX'), icon: FileText, tint: 'text-primary bg-primary/10' },
     ]
-
-    if (participation !== undefined) {
-        tiles.push({ label: 'Participación', value: formatPct(participation), icon: Percent, tint: 'text-primary bg-primary/10' })
-    }
 
     tiles.push(
         { label: 'Ingreso', value: formatMXNWithUnit(ingreso), icon: DollarSign, tint: 'text-success bg-success/10', highlight: true },
@@ -230,7 +225,7 @@ function MetricsGrid({ m, participation }: { m: Metrics; participation?: number 
     )
 }
 
-type RowData = { id: string; name: string; color?: string; initials?: string; metrics: Metrics; participation: number; children?: RowData[] }
+type RowData = { id: string; name: string; logoId?: string; color?: string; initials?: string; metrics: Metrics; participation: number; children?: RowData[] }
 
 function FullTable({
     rows,
@@ -316,13 +311,12 @@ function FullTable({
                             <TableHead className="text-right">Ingreso</TableHead>
                             <TableHead className="text-right">Prima</TableHead>
                             <TableHead className="text-center">Pólizas</TableHead>
-                            <TableHead className="text-right">Participación</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {visible.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={5} className="text-center text-muted-foreground py-8 text-sm">
+                                <TableCell colSpan={4} className="text-center text-muted-foreground py-8 text-sm">
                                     Sin resultados
                                 </TableCell>
                             </TableRow>
@@ -398,12 +392,13 @@ function RenderRow({
                             <ChevronDown className={cn('w-4 h-4 text-muted-foreground transition-transform shrink-0', isOpen && 'rotate-180')} />
                         )}
                         {row.color && row.initials && (
-                            <div
-                                className="w-7 h-7 rounded-md flex items-center justify-center text-white font-bold text-[10px] shrink-0"
-                                style={{ backgroundColor: row.color }}
-                            >
-                                {row.initials}
-                            </div>
+                            <InsurerLogo
+                                insurerId={row.logoId ?? row.id}
+                                name={row.name}
+                                initials={row.initials}
+                                color={row.color}
+                                size="xs"
+                            />
                         )}
                         <span className="font-medium text-primary text-sm">{row.name}</span>
                     </div>
@@ -419,13 +414,10 @@ function RenderRow({
                 </TableCell>
                 <TableCell className="text-right font-semibold text-primary">{formatMXN(row.metrics.prima)}</TableCell>
                 <TableCell className="text-center font-medium">{row.metrics.polizas}</TableCell>
-                <TableCell className="text-right">
-                    <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-xs">{formatPct(row.participation)}</Badge>
-                </TableCell>
             </TableRow>
             {isBreakdownOpen && (
                 <TableRow className="bg-slate-50 hover:bg-slate-50">
-                    <TableCell colSpan={5} className="py-3 px-6">
+                    <TableCell colSpan={4} className="py-3 px-6">
                         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-3">
                             {[
                                 { label: 'Comisión', value: row.metrics.comision },
@@ -435,7 +427,7 @@ function RenderRow({
                                 { label: 'Bono Cartera', value: row.metrics.bonoCartera },
                                 { label: 'Bono Integral', value: row.metrics.bonoIntegral },
                                 { label: 'UDI', value: row.metrics.udi },
-                                { label: 'Intervita', value: row.metrics.intervita, accent: true },
+                                { label: 'Partner', value: row.metrics.intervita, accent: true },
                                 { label: 'NOVA', value: row.metrics.nova, accent: true },
                             ].map(item => (
                                 <div key={item.label} className={cn('flex flex-col gap-0.5', item.accent && 'border-l-2 border-primary/30 pl-2')}>
@@ -462,6 +454,7 @@ function buildInsurerRows(): RowData[] {
     const totalPrima = totalAll.prima
     return INSURERS.map(ins => ({
         id: ins.id,
+        logoId: ins.id,
         name: ins.name,
         color: ins.color,
         initials: ins.initials,
@@ -493,6 +486,7 @@ function buildGroupInsurerRows(): RowData[] {
             const m = scaleMetrics(ins.metrics, weight)
             return {
                 id: `${group}-${ins.id}`,
+                logoId: ins.id,
                 name: ins.name,
                 color: ins.color,
                 initials: ins.initials,
@@ -544,6 +538,7 @@ function buildAgencyInsurerRows(): RowData[] {
                 const sub = scaleMetrics(ins.metrics, weight / agencies.length)
                 return {
                     id: `${agencyName}-${ins.id}`,
+                    logoId: ins.id,
                     name: ins.name,
                     color: ins.color,
                     initials: ins.initials,
@@ -652,10 +647,10 @@ export default function ReportsPage() {
 
         const headers = [
             'Tipo', 'Nivel', 'Entidad', 'Ingreso (MXN)',
-            'Prima (MXN)', 'Pólizas', 'Participación (%)',
+            'Prima (MXN)', 'Pólizas',
             'Comisión (MXN)', 'Bono Inicial (MXN)', 'Bono Siniestral (MXN)',
             'Bono Renovación (MXN)', 'Bono Cartera (MXN)', 'Bono Integral (MXN)', 'UDI (MXN)',
-            'Intervita (MXN)', 'NOVA (MXN)',
+            'Partner (MXN)', 'NOVA (MXN)',
         ]
 
         const lines: string[] = []
@@ -666,7 +661,7 @@ export default function ReportsPage() {
         // Resumen total
         lines.push([
             reportLabel, 'Total', 'Todas las aseguradoras', sumIngreso(scaledTotal),
-            scaledTotal.prima, scaledTotal.polizas, '100.0',
+            scaledTotal.prima, scaledTotal.polizas,
             scaledTotal.comision, scaledTotal.bonoInicial, scaledTotal.bonoSiniestral,
             scaledTotal.bonoRenovacion, scaledTotal.bonoCartera, scaledTotal.bonoIntegral, scaledTotal.udi,
             scaledTotal.intervita, scaledTotal.nova,
@@ -676,7 +671,7 @@ export default function ReportsPage() {
         function pushRow(r: RowData, level: 'Padre' | 'Hijo' = 'Padre') {
             lines.push([
                 reportLabel, level, r.name, sumIngreso(r.metrics),
-                r.metrics.prima, r.metrics.polizas, r.participation.toFixed(1),
+                r.metrics.prima, r.metrics.polizas,
                 r.metrics.comision, r.metrics.bonoInicial, r.metrics.bonoSiniestral,
                 r.metrics.bonoRenovacion, r.metrics.bonoCartera, r.metrics.bonoIntegral, r.metrics.udi,
                 r.metrics.intervita, r.metrics.nova,
@@ -768,7 +763,7 @@ export default function ReportsPage() {
                         <p className="text-sm text-muted-foreground">{data.description}</p>
                     </CardHeader>
                     <CardContent>
-                        <MetricsGrid m={data.metrics} participation={data.participation} />
+                        <MetricsGrid m={data.metrics} />
                     </CardContent>
                 </Card>
             )}

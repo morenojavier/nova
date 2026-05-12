@@ -13,6 +13,7 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import {
     Truck,
@@ -43,6 +44,7 @@ interface Vehicle {
     year: number
     plates: string
     vin: string
+    expiresAt: string  // DD/MM/YYYY format
     status: VehicleStatus
 }
 
@@ -141,11 +143,11 @@ const INITIAL_FLEETS: Fleet[] = [
             constanciaFiscal: 'csf_logistics_2025.pdf',
         },
         vehicles: [
-            { id: 'v1', brand: 'Nissan', model: 'NP300 Frontier', year: 2021, plates: 'TGH-78-42', vin: '3N6AD33A01K812345', status: 'Activo' },
-            { id: 'v2', brand: 'Ford', model: 'Transit', year: 2020, plates: 'RLM-91-07', vin: '1FTBR1Y80LKA12345', status: 'Activo' },
-            { id: 'v3', brand: 'Chevrolet', model: 'Express 2500', year: 2019, plates: 'PLX-44-19', vin: '1GCWGFCA1K1123456', status: 'Activo' },
-            { id: 'v4', brand: 'Mercedes-Benz', model: 'Sprinter 313', year: 2022, plates: 'KVT-55-83', vin: 'WD3PE8CD8JP123456', status: 'Baja' },
-            { id: 'v5', brand: 'Toyota', model: 'Hiace', year: 2021, plates: 'NMQ-23-61', vin: 'JTFSX22P5G4123456', status: 'Activo' },
+            { id: 'v1', brand: 'Nissan', model: 'NP300 Frontier', year: 2021, plates: 'TGH-78-42', vin: '3N6AD33A01K812345', expiresAt: '15/03/2024', status: 'Activo' },
+            { id: 'v2', brand: 'Ford', model: 'Transit', year: 2020, plates: 'RLM-91-07', vin: '1FTBR1Y80LKA12345', expiresAt: '15/03/2024', status: 'Activo' },
+            { id: 'v3', brand: 'Chevrolet', model: 'Express 2500', year: 2019, plates: 'PLX-44-19', vin: '1GCWGFCA1K1123456', expiresAt: '15/03/2024', status: 'Activo' },
+            { id: 'v4', brand: 'Mercedes-Benz', model: 'Sprinter 313', year: 2022, plates: 'KVT-55-83', vin: 'WD3PE8CD8JP123456', expiresAt: '05/09/2023', status: 'Baja' },
+            { id: 'v5', brand: 'Toyota', model: 'Hiace', year: 2021, plates: 'NMQ-23-61', vin: 'JTFSX22P5G4123456', expiresAt: '15/03/2024', status: 'Activo' },
         ],
         history: [
             { date: '15/03/2024', title: 'Póliza vencida', description: 'La póliza AXA-2024-003291 llegó a su fecha de vencimiento sin renovación.', type: 'renewal' },
@@ -169,10 +171,10 @@ const INITIAL_FLEETS: Fleet[] = [
         startDate: '01/06/2021',
         endDate: '01/06/2023',
         vehicles: [
-            { id: 'v6', brand: 'Kenworth', model: 'T370', year: 2020, plates: 'ZRQ-11-54', vin: '2XKFDB9X4DM123456', status: 'Activo' },
-            { id: 'v7', brand: 'International', model: 'ProStar 122', year: 2019, plates: 'BFH-66-30', vin: '3HSCUAPR4EN123456', status: 'Activo' },
-            { id: 'v8', brand: 'Freightliner', model: 'Cascadia 126', year: 2021, plates: 'WJV-48-95', vin: '3AKJGLD54FSGA1234', status: 'Activo' },
-            { id: 'v9', brand: 'Volvo', model: 'FH 460', year: 2018, plates: 'DPL-37-72', vin: 'YV2RT20A2BA123456', status: 'Baja' },
+            { id: 'v6', brand: 'Kenworth', model: 'T370', year: 2020, plates: 'ZRQ-11-54', vin: '2XKFDB9X4DM123456', expiresAt: '01/06/2023', status: 'Activo' },
+            { id: 'v7', brand: 'International', model: 'ProStar 122', year: 2019, plates: 'BFH-66-30', vin: '3HSCUAPR4EN123456', expiresAt: '01/06/2023', status: 'Activo' },
+            { id: 'v8', brand: 'Freightliner', model: 'Cascadia 126', year: 2021, plates: 'WJV-48-95', vin: '3AKJGLD54FSGA1234', expiresAt: '01/06/2023', status: 'Activo' },
+            { id: 'v9', brand: 'Volvo', model: 'FH 460', year: 2018, plates: 'DPL-37-72', vin: 'YV2RT20A2BA123456', expiresAt: '20/10/2022', status: 'Baja' },
         ],
         history: [
             { date: '01/06/2023', title: 'Póliza vencida', description: 'La póliza AXA-2023-011220 venció. El cliente no renovó.', type: 'renewal' },
@@ -209,9 +211,9 @@ const INITIAL_FLEETS: Fleet[] = [
             constanciaFiscal: 'csf_gil_2025.pdf',
         },
         vehicles: [
-            { id: 'v10', brand: 'Toyota', model: 'Hilux', year: 2023, plates: 'GNX-82-16', vin: 'MR0EX32G100123456', status: 'Activo' },
-            { id: 'v11', brand: 'Ford', model: 'Ranger XLT', year: 2022, plates: 'CJM-59-40', vin: '1FTER4EH8NLD12345', status: 'Activo' },
-            { id: 'v12', brand: 'Chevrolet', model: 'S10', year: 2021, plates: 'HBT-74-28', vin: '8LNXTF3EXMG123456', status: 'Activo' },
+            { id: 'v10', brand: 'Toyota', model: 'Hilux', year: 2023, plates: 'GNX-82-16', vin: 'MR0EX32G100123456', expiresAt: '01/11/2026', status: 'Activo' },
+            { id: 'v11', brand: 'Ford', model: 'Ranger XLT', year: 2022, plates: 'CJM-59-40', vin: '1FTER4EH8NLD12345', expiresAt: '01/11/2026', status: 'Activo' },
+            { id: 'v12', brand: 'Chevrolet', model: 'S10', year: 2021, plates: 'HBT-74-28', vin: '8LNXTF3EXMG123456', expiresAt: '01/11/2026', status: 'Activo' },
         ],
         history: [
             { date: '15/03/2025', title: 'Ajuste de prima', description: 'Prima revisada y ajustada de $36,000 a $38,500 para el año en curso.', type: 'premium_adjust' },
@@ -242,11 +244,11 @@ const INITIAL_FLEETS: Fleet[] = [
             identificationNumber: 'NRMDR91081234M500',
         },
         vehicles: [
-            { id: 'v13', brand: 'Ford', model: 'F-150', year: 2023, plates: 'MXK-33-91', vin: '1FTFW1ED0NFC12345', status: 'Activo' },
-            { id: 'v14', brand: 'Toyota', model: 'Tacoma', year: 2022, plates: 'BJN-47-58', vin: '3TMCZ5AN3NM123456', status: 'Activo' },
-            { id: 'v15', brand: 'Nissan', model: 'NP300 Frontier', year: 2024, plates: 'PQR-12-77', vin: '3N6AD33A0NK123456', status: 'Activo' },
-            { id: 'v16', brand: 'Dodge', model: 'Ram 1500', year: 2021, plates: 'TKL-84-20', vin: '1C6SRFKT6MN123456', status: 'Activo' },
-            { id: 'v17', brand: 'Chevrolet', model: 'Silverado', year: 2023, plates: 'ZMV-09-63', vin: '1GCRYDED1NZ123456', status: 'Activo' },
+            { id: 'v13', brand: 'Ford', model: 'F-150', year: 2023, plates: 'MXK-33-91', vin: '1FTFW1ED0NFC12345', expiresAt: '10/01/2027', status: 'Activo' },
+            { id: 'v14', brand: 'Toyota', model: 'Tacoma', year: 2022, plates: 'BJN-47-58', vin: '3TMCZ5AN3NM123456', expiresAt: '10/01/2027', status: 'Activo' },
+            { id: 'v15', brand: 'Nissan', model: 'NP300 Frontier', year: 2024, plates: 'PQR-12-77', vin: '3N6AD33A0NK123456', expiresAt: '10/01/2027', status: 'Activo' },
+            { id: 'v16', brand: 'Dodge', model: 'Ram 1500', year: 2021, plates: 'TKL-84-20', vin: '1C6SRFKT6MN123456', expiresAt: '10/07/2026', status: 'Activo' },
+            { id: 'v17', brand: 'Chevrolet', model: 'Silverado', year: 2023, plates: 'ZMV-09-63', vin: '1GCRYDED1NZ123456', expiresAt: '10/07/2026', status: 'Activo' },
         ],
         history: [
             { date: '01/04/2025', title: '+2 vehículos agregados', description: 'Se incorporaron Chevrolet Silverado (ZMV-09-63) y Dodge Ram 1500 (TKL-84-20).', type: 'vehicle_add' },
@@ -267,9 +269,9 @@ const INITIAL_FLEETS: Fleet[] = [
         endDate: null,
         group: 'Constructora Vega',
         vehicles: [
-            { id: 'v18', brand: 'Ford', model: 'Transit', year: 2020, plates: 'ALG-77-14', vin: '1FTBR1X85LKA12345', status: 'Activo' },
-            { id: 'v19', brand: 'Nissan', model: 'Urvan', year: 2021, plates: 'CGM-51-39', vin: 'JN1NANS95U0123456', status: 'Activo' },
-            { id: 'v20', brand: 'Mercedes-Benz', model: 'Sprinter 416', year: 2019, plates: 'KPT-68-02', vin: 'WD3PF8CD0KP123456', status: 'Baja' },
+            { id: 'v18', brand: 'Ford', model: 'Transit', year: 2020, plates: 'ALG-77-14', vin: '1FTBR1X85LKA12345', expiresAt: '20/05/2026', status: 'Activo' },
+            { id: 'v19', brand: 'Nissan', model: 'Urvan', year: 2021, plates: 'CGM-51-39', vin: 'JN1NANS95U0123456', expiresAt: '25/05/2026', status: 'Activo' },
+            { id: 'v20', brand: 'Mercedes-Benz', model: 'Sprinter 416', year: 2019, plates: 'KPT-68-02', vin: 'WD3PF8CD0KP123456', expiresAt: '15/11/2023', status: 'Baja' },
         ],
         history: [
             { date: '20/05/2025', title: 'Aviso de vencimiento', description: 'Póliza próxima a vencer el 15/07/2025. Se envió aviso al cliente.', type: 'renewal' },
@@ -292,10 +294,10 @@ const INITIAL_FLEETS: Fleet[] = [
         startDate: '05/05/2021',
         endDate: '05/05/2023',
         vehicles: [
-            { id: 'v21', brand: 'Toyota', model: 'Corolla', year: 2019, plates: 'RTH-92-45', vin: 'JTDKARFU5K3123456', status: 'Baja' },
-            { id: 'v22', brand: 'Volkswagen', model: 'Transporter', year: 2020, plates: 'SBK-14-77', vin: 'WV2ZZZ7HZM3123456', status: 'Activo' },
-            { id: 'v23', brand: 'Nissan', model: 'Tsuru', year: 2018, plates: 'LNW-28-03', vin: 'JN1NANS09U0123456', status: 'Baja' },
-            { id: 'v24', brand: 'Chevrolet', model: 'Aveo', year: 2021, plates: 'PHX-61-88', vin: 'KL1TF5569MB123456', status: 'Activo' },
+            { id: 'v21', brand: 'Toyota', model: 'Corolla', year: 2019, plates: 'RTH-92-45', vin: 'JTDKARFU5K3123456', expiresAt: '01/03/2023', status: 'Baja' },
+            { id: 'v22', brand: 'Volkswagen', model: 'Transporter', year: 2020, plates: 'SBK-14-77', vin: 'WV2ZZZ7HZM3123456', expiresAt: '05/05/2023', status: 'Activo' },
+            { id: 'v23', brand: 'Nissan', model: 'Tsuru', year: 2018, plates: 'LNW-28-03', vin: 'JN1NANS09U0123456', expiresAt: '01/03/2023', status: 'Baja' },
+            { id: 'v24', brand: 'Chevrolet', model: 'Aveo', year: 2021, plates: 'PHX-61-88', vin: 'KL1TF5569MB123456', expiresAt: '05/05/2023', status: 'Activo' },
         ],
         history: [
             { date: '05/05/2023', title: 'Póliza vencida', description: 'La póliza QUA-2021-002811 venció. Cliente en proceso de transición a otra aseguradora.', type: 'renewal' },
@@ -318,10 +320,10 @@ const INITIAL_FLEETS: Fleet[] = [
         startDate: '20/08/2024',
         endDate: null,
         vehicles: [
-            { id: 'v25', brand: 'Ford', model: 'F-350', year: 2022, plates: 'GRL-45-19', vin: '1FT8W3DT0NEA12345', status: 'Activo' },
-            { id: 'v26', brand: 'Chevrolet', model: 'Cheyenne', year: 2023, plates: 'WNT-83-57', vin: '3GCPWDED1NG123456', status: 'Activo' },
-            { id: 'v27', brand: 'Toyota', model: 'Land Cruiser', year: 2021, plates: 'BCV-16-92', vin: 'JTMCV02J6M4123456', status: 'Activo' },
-            { id: 'v28', brand: 'Nissan', model: 'Navara', year: 2020, plates: 'KMR-70-44', vin: 'JN1CZND22Z0123456', status: 'Activo' },
+            { id: 'v25', brand: 'Ford', model: 'F-350', year: 2022, plates: 'GRL-45-19', vin: '1FT8W3DT0NEA12345', expiresAt: '15/05/2026', status: 'Activo' },
+            { id: 'v26', brand: 'Chevrolet', model: 'Cheyenne', year: 2023, plates: 'WNT-83-57', vin: '3GCPWDED1NG123456', expiresAt: '22/05/2026', status: 'Activo' },
+            { id: 'v27', brand: 'Toyota', model: 'Land Cruiser', year: 2021, plates: 'BCV-16-92', vin: 'JTMCV02J6M4123456', expiresAt: '30/05/2026', status: 'Activo' },
+            { id: 'v28', brand: 'Nissan', model: 'Navara', year: 2020, plates: 'KMR-70-44', vin: 'JN1CZND22Z0123456', expiresAt: '18/05/2026', status: 'Activo' },
         ],
         history: [
             { date: '10/06/2025', title: 'Aviso de vencimiento', description: 'Póliza vence el 20/08/2025. Cotizaciones de renovación en proceso.', type: 'renewal' },
@@ -358,14 +360,23 @@ function todayDDMMYYYY(): string {
     return `${d}/${m}/${y}`
 }
 
-function parseDDMMYYYY(dateStr: string): Date {
-    const [d, m, y] = dateStr.split('/').map(Number)
+function parseDDMMYYYY(dateStr: string): Date | null {
+    const parts = dateStr.split('/')
+    if (parts.length !== 3) return null
+    const [d, m, y] = parts.map(Number)
+    if (!d || !m || !y) return null
     return new Date(y, m - 1, d)
+}
+
+function daysBetween(date: Date, today: Date): number {
+    const msPerDay = 1000 * 60 * 60 * 24
+    return Math.round((date.getTime() - today.getTime()) / msPerDay)
 }
 
 function computeDaysActive(startDate: string, endDate: string | null): number {
     const start = parseDDMMYYYY(startDate)
     const end = endDate ? parseDDMMYYYY(endDate) : new Date()
+    if (!start || !end) return 0
     return Math.max(0, Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)))
 }
 
@@ -1132,13 +1143,312 @@ function NewFleetModal({
     )
 }
 
+// ─── Expiry Chip ──────────────────────────────────────────────────────────────
+
+function ExpiryChip({ expiresAt }: { expiresAt: string }) {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const expiry = parseDDMMYYYY(expiresAt)
+    if (!expiry) return <span className="text-xs text-muted-foreground">{expiresAt}</span>
+
+    const days = daysBetween(expiry, today)
+
+    const chipClass: string =
+        days > 60 ? 'bg-slate-100 text-slate-500' :
+        days > 29 ? 'bg-warning/10 text-warning' :
+        'bg-destructive/10 text-destructive'
+
+    const label: string =
+        days >= 0 ? `${days} días` : `Vencido hace ${Math.abs(days)} días`
+
+    return (
+        <div className="flex flex-col gap-0.5">
+            <span className="text-sm tabular-nums">{expiresAt}</span>
+            <span className={cn('inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold w-fit', chipClass)}>
+                {label}
+            </span>
+        </div>
+    )
+}
+
+// ─── Add Vehicle Modal ────────────────────────────────────────────────────────
+
+interface AddVehicleForm {
+    brand: string
+    model: string
+    year: string
+    plates: string
+    vin: string
+    expiresAt: string
+}
+
+interface AddVehicleErrors {
+    brand?: string
+    model?: string
+    year?: string
+    plates?: string
+    vin?: string
+    expiresAt?: string
+}
+
+function defaultExpiresAt(): string {
+    const d = new Date()
+    d.setFullYear(d.getFullYear() + 1)
+    const day = String(d.getDate()).padStart(2, '0')
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    return `${d.getFullYear()}-${month}-${day}`
+}
+
+function AddVehicleModal({
+    onClose,
+    onSave,
+}: {
+    onClose: () => void
+    onSave: (vehicle: Vehicle) => void
+}) {
+    const [form, setForm] = useState<AddVehicleForm>({
+        brand: '',
+        model: '',
+        year: '',
+        plates: '',
+        vin: '',
+        expiresAt: defaultExpiresAt(),
+    })
+    const [errors, setErrors] = useState<AddVehicleErrors>({})
+
+    function setField<K extends keyof AddVehicleForm>(key: K, value: string) {
+        setForm((prev) => ({ ...prev, [key]: value }))
+        if (errors[key]) setErrors((prev) => ({ ...prev, [key]: undefined }))
+    }
+
+    function validate(): AddVehicleErrors {
+        const e: AddVehicleErrors = {}
+        if (form.brand.trim().length < 2) e.brand = 'Mínimo 2 caracteres'
+        if (form.model.trim().length < 2) e.model = 'Mínimo 2 caracteres'
+        const yearNum = Number(form.year)
+        const currentYear = new Date().getFullYear()
+        if (!form.year || isNaN(yearNum) || yearNum < 1990 || yearNum > currentYear + 1) {
+            e.year = `Año entre 1990 y ${currentYear + 1}`
+        }
+        if (form.plates.trim().length === 0) e.plates = 'Requerido'
+        if (form.vin.trim().length > 0 && form.vin.trim().length !== 17) {
+            e.vin = 'El VIN debe tener 17 caracteres'
+        }
+        if (!form.expiresAt) e.expiresAt = 'Requerido'
+        return e
+    }
+
+    function handleSave() {
+        const e = validate()
+        if (Object.keys(e).length > 0) {
+            setErrors(e)
+            return
+        }
+
+        // Convert date input (YYYY-MM-DD) to DD/MM/YYYY
+        const [y, m, d] = form.expiresAt.split('-')
+        const expiresFormatted = `${d}/${m}/${y}`
+
+        const vehicle: Vehicle = {
+            id: String(Date.now()),
+            brand: form.brand.trim(),
+            model: form.model.trim(),
+            year: Number(form.year),
+            plates: form.plates.trim().toUpperCase(),
+            vin: form.vin.trim().toUpperCase(),
+            expiresAt: expiresFormatted,
+            status: 'Activo',
+        }
+        onSave(vehicle)
+        onClose()
+    }
+
+    return (
+        <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+            onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+        >
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden">
+
+                {/* Header */}
+                <div className="bg-primary px-6 py-5 flex items-start justify-between gap-4 shrink-0">
+                    <div>
+                        <h2 className="text-white font-bold text-lg leading-tight">Agregar Vehículo</h2>
+                        <p className="text-white/70 text-sm mt-0.5">
+                            Registra un nuevo vehículo para esta flotilla
+                        </p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="p-1.5 rounded-lg hover:bg-white/10 transition-colors mt-0.5 shrink-0"
+                        aria-label="Cerrar modal"
+                    >
+                        <X className="w-5 h-5 text-white" />
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className="overflow-y-auto max-h-[80vh] flex-1 px-6 py-5 space-y-4">
+
+                    {/* Marca */}
+                    <div className="space-y-1.5">
+                        <Label htmlFor="av-brand" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            Marca <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                            id="av-brand"
+                            placeholder="Ej. Toyota"
+                            value={form.brand}
+                            onChange={(e) => setField('brand', e.target.value)}
+                            className={cn('h-9', errors.brand && 'border-destructive focus-visible:ring-destructive')}
+                        />
+                        {errors.brand && <p className="text-xs text-destructive">{errors.brand}</p>}
+                    </div>
+
+                    {/* Modelo */}
+                    <div className="space-y-1.5">
+                        <Label htmlFor="av-model" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            Modelo <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                            id="av-model"
+                            placeholder="Ej. Hilux"
+                            value={form.model}
+                            onChange={(e) => setField('model', e.target.value)}
+                            className={cn('h-9', errors.model && 'border-destructive focus-visible:ring-destructive')}
+                        />
+                        {errors.model && <p className="text-xs text-destructive">{errors.model}</p>}
+                    </div>
+
+                    {/* Año */}
+                    <div className="space-y-1.5">
+                        <Label htmlFor="av-year" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            Año <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                            id="av-year"
+                            placeholder="Ej. 2023"
+                            value={form.year}
+                            onChange={(e) => setField('year', e.target.value)}
+                            inputMode="numeric"
+                            maxLength={4}
+                            className={cn('h-9', errors.year && 'border-destructive focus-visible:ring-destructive')}
+                        />
+                        {errors.year && <p className="text-xs text-destructive">{errors.year}</p>}
+                    </div>
+
+                    {/* Placas */}
+                    <div className="space-y-1.5">
+                        <Label htmlFor="av-plates" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            Placas <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                            id="av-plates"
+                            placeholder="Ej. ABC-123-DE"
+                            value={form.plates}
+                            onChange={(e) => setField('plates', e.target.value.toUpperCase())}
+                            className={cn('h-9 font-mono', errors.plates && 'border-destructive focus-visible:ring-destructive')}
+                        />
+                        {errors.plates && <p className="text-xs text-destructive">{errors.plates}</p>}
+                    </div>
+
+                    {/* VIN */}
+                    <div className="space-y-1.5">
+                        <Label htmlFor="av-vin" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            VIN / No. Serie <span className="text-muted-foreground font-normal normal-case">(opcional, 17 chars)</span>
+                        </Label>
+                        <Input
+                            id="av-vin"
+                            placeholder="Ej. 1HGBH41JXMN109186"
+                            value={form.vin}
+                            onChange={(e) => setField('vin', e.target.value.toUpperCase())}
+                            maxLength={17}
+                            className={cn('h-9 font-mono', errors.vin && 'border-destructive focus-visible:ring-destructive')}
+                        />
+                        {errors.vin && <p className="text-xs text-destructive">{errors.vin}</p>}
+                    </div>
+
+                    {/* Vencimiento */}
+                    <div className="space-y-1.5">
+                        <Label htmlFor="av-expires" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            Vencimiento <span className="text-destructive">*</span>
+                        </Label>
+                        <Input
+                            id="av-expires"
+                            type="date"
+                            value={form.expiresAt}
+                            onChange={(e) => setField('expiresAt', e.target.value)}
+                            className={cn('h-9', errors.expiresAt && 'border-destructive focus-visible:ring-destructive')}
+                        />
+                        {errors.expiresAt && <p className="text-xs text-destructive">{errors.expiresAt}</p>}
+                    </div>
+
+                </div>
+
+                {/* Footer */}
+                <div className="px-6 py-4 border-t bg-slate-50 flex justify-end gap-3 shrink-0">
+                    <Button variant="outline" onClick={onClose}>
+                        Cancelar
+                    </Button>
+                    <Button
+                        onClick={handleSave}
+                        className="bg-primary hover:bg-primary/90 gap-2"
+                    >
+                        <Plus className="h-4 w-4" />
+                        Guardar Vehículo
+                    </Button>
+                </div>
+
+            </div>
+        </div>
+    )
+}
+
 // ─── Detail View ──────────────────────────────────────────────────────────────
 
-function FleetDetailView({ fleet, onBack }: { fleet: Fleet; onBack: () => void }) {
+function FleetDetailView({
+    initialFleet,
+    onBack,
+    onFleetUpdate,
+}: {
+    initialFleet: Fleet
+    onBack: () => void
+    onFleetUpdate: (fleet: Fleet) => void
+}) {
+    const [fleet, setFleet] = useState<Fleet>(initialFleet)
+    const [showAddVehicle, setShowAddVehicle] = useState(false)
+
     const daysActive = computeDaysActive(fleet.startDate, fleet.endDate)
+
+    function handleAddVehicle(vehicle: Vehicle) {
+        const today = todayDDMMYYYY()
+        const updated: Fleet = {
+            ...fleet,
+            vehicleCount: fleet.vehicleCount + 1,
+            vehicles: [...fleet.vehicles, vehicle],
+            history: [
+                {
+                    date: today,
+                    title: 'Vehículo agregado',
+                    description: `${vehicle.brand} ${vehicle.model} ${vehicle.year} (${vehicle.plates}) agregado a la flotilla`,
+                    type: 'vehicle_add',
+                },
+                ...fleet.history,
+            ],
+        }
+        setFleet(updated)
+        onFleetUpdate(updated)
+    }
 
     return (
         <div className="space-y-6 animate-fade-in">
+            {showAddVehicle && (
+                <AddVehicleModal
+                    onClose={() => setShowAddVehicle(false)}
+                    onSave={handleAddVehicle}
+                />
+            )}
+
             {/* Back + header */}
             <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                 <Button
@@ -1250,7 +1560,11 @@ function FleetDetailView({ fleet, onBack }: { fleet: Fleet; onBack: () => void }
                                 {fleet.vehicles.filter(v => v.status === 'Baja').length} de baja
                             </p>
                         </div>
-                        <Button size="sm" className="bg-primary hover:bg-primary/90 gap-1.5">
+                        <Button
+                            size="sm"
+                            className="bg-primary hover:bg-primary/90 gap-1.5"
+                            onClick={() => setShowAddVehicle(true)}
+                        >
                             <Plus className="h-3.5 w-3.5" />
                             Agregar Vehículo
                         </Button>
@@ -1265,13 +1579,14 @@ function FleetDetailView({ fleet, onBack }: { fleet: Fleet; onBack: () => void }
                                     <TableHead className="text-xs">Año</TableHead>
                                     <TableHead className="text-xs">Placas</TableHead>
                                     <TableHead className="text-xs">No. Serie (VIN)</TableHead>
+                                    <TableHead className="text-xs">Vencimiento</TableHead>
                                     <TableHead className="text-xs">Estatus</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {fleet.vehicles.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground text-sm">
+                                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground text-sm">
                                             Sin vehículos registrados aún.
                                         </TableCell>
                                     </TableRow>
@@ -1289,7 +1604,10 @@ function FleetDetailView({ fleet, onBack }: { fleet: Fleet; onBack: () => void }
                                                 {vehicle.plates}
                                             </TableCell>
                                             <TableCell className="font-mono text-xs text-muted-foreground">
-                                                {vehicle.vin}
+                                                {vehicle.vin || '—'}
+                                            </TableCell>
+                                            <TableCell>
+                                                <ExpiryChip expiresAt={vehicle.expiresAt} />
                                             </TableCell>
                                             <TableCell>
                                                 <VehicleStatusBadge status={vehicle.status} />
@@ -1356,6 +1674,10 @@ export default function FleetsPage() {
         setFleets((prev) => [fleet, ...prev])
     }
 
+    function handleFleetUpdate(updated: Fleet) {
+        setFleets((prev) => prev.map((f) => (f.id === updated.id ? updated : f)))
+    }
+
     const filtered = fleets.filter((fleet) => {
         const term = search.toLowerCase().trim()
         const matchesSearch =
@@ -1371,8 +1693,9 @@ export default function FleetsPage() {
     if (selectedFleet) {
         return (
             <FleetDetailView
-                fleet={selectedFleet}
+                initialFleet={selectedFleet}
                 onBack={() => setSelectedFleet(null)}
+                onFleetUpdate={handleFleetUpdate}
             />
         )
     }

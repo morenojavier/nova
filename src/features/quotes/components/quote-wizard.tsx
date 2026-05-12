@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { InsurerLogo } from '@/components/ui/insurer-logo'
 import { cn } from '@/lib/utils'
 import {
     getBrands, getModelsByBrand, getYearsForBrand, getVersions, vehicleUsageOptions,
@@ -468,8 +469,7 @@ function StepDriverInfo({
         data.driver.zipCode.length >= 4 &&
         data.driver.name.trim().length >= 2 &&
         data.driver.email.includes('@') &&
-        data.driver.phone.length >= 10 &&
-        (data.driver.whatsappSameAsPhone || data.driver.whatsapp.length >= 10)
+        data.driver.phone.length >= 10
 
     const otherDriverValid = data.isInsured !== false || (
         data.otherDriver.relationship !== '' &&
@@ -561,34 +561,6 @@ function StepDriverInfo({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Input id="driverEmail" type="email" label="Correo electrónico" placeholder="correo@ejemplo.com" value={data.driver.email} onChange={(e) => updateDriver('email', e.target.value)} className="h-11" />
                     <Input id="driverPhone" type="tel" inputMode="numeric" maxLength={10} label="Celular" placeholder="10 dígitos" value={data.driver.phone} onChange={(e) => updateDriver('phone', e.target.value.replace(/\D/g, ''))} className="h-11" />
-                </div>
-                {/* WhatsApp */}
-                <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                        <input
-                            id="whatsappSame"
-                            type="checkbox"
-                            checked={data.driver.whatsappSameAsPhone}
-                            onChange={(e) => updateDriver('whatsappSameAsPhone', e.target.checked)}
-                            className="h-4 w-4 rounded border-slate-300 accent-primary cursor-pointer"
-                        />
-                        <label htmlFor="whatsappSame" className="text-sm text-muted-foreground cursor-pointer select-none">
-                            WhatsApp es el mismo número de celular
-                        </label>
-                    </div>
-                    {!data.driver.whatsappSameAsPhone && (
-                        <Input
-                            id="driverWhatsapp"
-                            type="tel"
-                            inputMode="numeric"
-                            maxLength={10}
-                            label="WhatsApp"
-                            placeholder="10 dígitos"
-                            value={data.driver.whatsapp}
-                            onChange={(e) => updateDriver('whatsapp', e.target.value.replace(/\D/g, ''))}
-                            className="h-11"
-                        />
-                    )}
                 </div>
             </div>
 
@@ -751,6 +723,7 @@ function StepInsurers({
                                 <TableHead className="text-center">Coberturas</TableHead>
                                 <TableHead className="text-center">Asistencias</TableHead>
                                 <TableHead className="text-right">Prima anual</TableHead>
+                                <TableHead className="w-[140px]" />
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -774,12 +747,13 @@ function StepInsurers({
                                         )}
                                     >
                                         <TableCell className="pl-3">
-                                            <div
-                                                className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0"
-                                                style={{ backgroundColor: quote.color }}
-                                            >
-                                                {quote.initials}
-                                            </div>
+                                            <InsurerLogo
+                                                insurerId={quote.id}
+                                                name={quote.insurer}
+                                                initials={quote.initials}
+                                                color={quote.color}
+                                                size="md"
+                                            />
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
@@ -803,6 +777,18 @@ function StepInsurers({
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <p className="text-sm text-muted-foreground">{formatMoney(plan.annualPremium)}</p>
+                                        </TableCell>
+                                        <TableCell className="text-right pr-3">
+                                            <Button
+                                                size="sm"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    onChange({ selectedInsurer: quote.id })
+                                                    onNext()
+                                                }}
+                                            >
+                                                Continuar
+                                            </Button>
                                         </TableCell>
                                     </TableRow>
                                 )
@@ -845,14 +831,30 @@ function StepConfirmDriver({
 
     const selectedQuote = mockQuotes.find(q => q.id === data.selectedInsurer)
 
+    // Per-field validity checks (todos obligatorios)
+    const invalid = {
+        firstName: cd.firstName.trim().length < 2,
+        paternalLastName: cd.paternalLastName.trim().length < 2,
+        maternalLastName: cd.maternalLastName.trim().length < 2,
+        sex: cd.sex === '',
+        birthDate: cd.birthDate === '',
+        birthState: cd.birthState === '',
+        email: !cd.email.includes('@'),
+        phone: cd.phone.length < 10,
+    }
+
     const isValid =
-        cd.firstName.trim().length >= 2 &&
-        cd.paternalLastName.trim().length >= 2 &&
-        cd.sex !== '' &&
-        cd.birthDate !== '' &&
-        cd.birthState !== '' &&
-        cd.email.includes('@') &&
-        cd.phone.length >= 10
+        !invalid.firstName &&
+        !invalid.paternalLastName &&
+        !invalid.maternalLastName &&
+        !invalid.sex &&
+        !invalid.birthDate &&
+        !invalid.birthState &&
+        !invalid.email &&
+        !invalid.phone
+
+    // Subtle highlight for fields missing data
+    const missingClass = 'border-amber-400 bg-amber-50/50 ring-1 ring-amber-300/60'
 
     const usageLabelConfirm = vehicleUsageOptions.find(u => u.id === data.usage)?.label ?? data.usage
 
@@ -916,12 +918,12 @@ function StepConfirmDriver({
 
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <Input id="cfName" label="Nombre(s)" placeholder="Nombre" value={cd.firstName} onChange={(e) => update('firstName', e.target.value)} className="h-11" />
-                        <Input id="cfPaternal" label="Apellido paterno" placeholder="Apellido paterno" value={cd.paternalLastName} onChange={(e) => update('paternalLastName', e.target.value)} className="h-11" />
-                        <Input id="cfMaternal" label="Apellido materno" placeholder="Apellido materno" value={cd.maternalLastName} onChange={(e) => update('maternalLastName', e.target.value)} className="h-11" />
+                        <Input id="cfName" label="Nombre(s)" placeholder="Nombre" value={cd.firstName} onChange={(e) => update('firstName', e.target.value)} className={cn('h-11', invalid.firstName && missingClass)} />
+                        <Input id="cfPaternal" label="Apellido paterno" placeholder="Apellido paterno" value={cd.paternalLastName} onChange={(e) => update('paternalLastName', e.target.value)} className={cn('h-11', invalid.paternalLastName && missingClass)} />
+                        <Input id="cfMaternal" label="Apellido materno" placeholder="Apellido materno" value={cd.maternalLastName} onChange={(e) => update('maternalLastName', e.target.value)} className={cn('h-11', invalid.maternalLastName && missingClass)} />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className={cn('space-y-2 -m-2 p-2 rounded-xl', invalid.sex && 'bg-amber-50/50 ring-1 ring-amber-300/60')}>
                         <Label>Sexo</Label>
                         <div className="flex gap-3">
                             {[{ val: 'male', label: 'Masculino' }, { val: 'female', label: 'Femenino' }].map(opt => (
@@ -932,7 +934,8 @@ function StepConfirmDriver({
                                         'flex-1 py-2.5 rounded-xl border text-sm font-semibold transition-all',
                                         cd.sex === opt.val
                                             ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary'
-                                            : 'border-slate-200 bg-white text-muted-foreground hover:border-primary/50'
+                                            : 'border-slate-200 bg-white text-muted-foreground hover:border-primary/50',
+                                        invalid.sex && cd.sex !== opt.val && 'border-amber-400'
                                     )}
                                 >
                                     {opt.label}
@@ -942,14 +945,17 @@ function StepConfirmDriver({
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Input id="cfBirthDate" type="date" label="Fecha de nacimiento" value={cd.birthDate} onChange={(e) => update('birthDate', e.target.value)} className="h-11" />
-                        <div className="space-y-2">
-                            <Label htmlFor="cfBirthState">Estado de nacimiento</Label>
+                        <Input id="cfBirthDate" type="date" label="Fecha de nacimiento" value={cd.birthDate} onChange={(e) => update('birthDate', e.target.value)} className={cn('h-11', invalid.birthDate && missingClass)} />
+                        <div className="w-full">
+                            <label htmlFor="cfBirthState" className="block text-sm font-medium mb-1">Estado de nacimiento</label>
                             <select
                                 id="cfBirthState"
                                 value={cd.birthState}
                                 onChange={(e) => update('birthState', e.target.value)}
-                                className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                className={cn(
+                                    'flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+                                    invalid.birthState && missingClass
+                                )}
                             >
                                 <option value="">Selecciona un estado</option>
                                 {mexicanStates.map(s => (
@@ -960,8 +966,8 @@ function StepConfirmDriver({
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Input id="cfEmail" type="email" label="Correo electrónico" placeholder="correo@ejemplo.com" value={cd.email} onChange={(e) => update('email', e.target.value)} className="h-11" />
-                        <Input id="cfPhone" type="tel" inputMode="numeric" maxLength={10} label="Celular" placeholder="10 dígitos" value={cd.phone} onChange={(e) => update('phone', e.target.value.replace(/\D/g, ''))} className="h-11" />
+                        <Input id="cfEmail" type="email" label="Correo electrónico" placeholder="correo@ejemplo.com" value={cd.email} onChange={(e) => update('email', e.target.value)} className={cn('h-11', invalid.email && missingClass)} />
+                        <Input id="cfPhone" type="tel" inputMode="numeric" maxLength={10} label="Celular" placeholder="10 dígitos" value={cd.phone} onChange={(e) => update('phone', e.target.value.replace(/\D/g, ''))} className={cn('h-11', invalid.phone && missingClass)} />
                     </div>
                 </div>
 
@@ -1052,12 +1058,13 @@ function PaymentModal({
                 <div className="bg-primary p-6 text-white">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-3">
-                            <div
-                                className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-xs"
-                                style={{ backgroundColor: quote.color }}
-                            >
-                                {quote.initials}
-                            </div>
+                            <InsurerLogo
+                                insurerId={quote.id}
+                                name={quote.insurer}
+                                initials={quote.initials}
+                                color={quote.color}
+                                size="md"
+                            />
                             <div>
                                 <p className="font-semibold">{quote.insurer}</p>
                                 <p className="text-white/70 text-xs">Seguro de auto</p>

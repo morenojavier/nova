@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
 import { ArrowLeft, Search, MoreHorizontal, FileText, Users, TrendingUp, DollarSign, Wallet, Gift } from 'lucide-react'
+import { InsurerLogo } from '@/components/ui/insurer-logo'
 import { cn } from '@/lib/utils'
 
 type InsurerClient = {
@@ -126,17 +127,19 @@ function StatusBadge({ status }: { status: InsurerClient['status'] }) {
 export default function InsurersPage() {
     const [selectedInsurer, setSelectedInsurer] = useState<Insurer | null>(null)
     const [search, setSearch] = useState('')
+    const [statusFilter, setStatusFilter] = useState<InsurerClient['status'] | null>(null)
 
     // Detail view
     if (selectedInsurer) {
-        const filtered = search
-            ? selectedInsurer.clients.filter(c =>
+        const filtered = selectedInsurer.clients.filter(c => {
+            const matchesSearch = !search ||
                 c.client.toLowerCase().includes(search.toLowerCase()) ||
                 c.policyNumber.toLowerCase().includes(search.toLowerCase()) ||
                 c.planType.toLowerCase().includes(search.toLowerCase()) ||
                 c.vehicle.toLowerCase().includes(search.toLowerCase())
-            )
-            : selectedInsurer.clients
+            const matchesStatus = !statusFilter || c.status === statusFilter
+            return matchesSearch && matchesStatus
+        })
 
         const vigentes = selectedInsurer.clients.filter(c => c.status === 'Vigente').length
         const porVencer = selectedInsurer.clients.filter(c => c.status === 'Por Vencer').length
@@ -146,7 +149,7 @@ export default function InsurersPage() {
             <div className="space-y-6 animate-fade-in">
                 {/* Back */}
                 <button
-                    onClick={() => { setSelectedInsurer(null); setSearch('') }}
+                    onClick={() => { setSelectedInsurer(null); setSearch(''); setStatusFilter(null) }}
                     className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                     <ArrowLeft className="w-4 h-4" />
@@ -155,12 +158,13 @@ export default function InsurersPage() {
 
                 {/* Insurer header */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                    <div
-                        className="w-16 h-16 rounded-xl flex items-center justify-center text-white font-bold text-lg shrink-0"
-                        style={{ backgroundColor: selectedInsurer.avatarBg }}
-                    >
-                        {selectedInsurer.initials}
-                    </div>
+                    <InsurerLogo
+                        insurerId={selectedInsurer.name}
+                        name={selectedInsurer.name}
+                        initials={selectedInsurer.initials}
+                        color={selectedInsurer.avatarBg}
+                        size="lg"
+                    />
                     <div className="flex-1">
                         <div className="flex items-center gap-3">
                             <h1 className="text-3xl font-bold tracking-tight text-primary">{selectedInsurer.name}</h1>
@@ -238,11 +242,56 @@ export default function InsurersPage() {
                     </Card>
                 </div>
 
-                {/* Status summary */}
-                <div className="flex gap-3">
-                    <Badge variant="outline" className="bg-success/10 text-success border-success/20 px-3 py-1">{vigentes} Vigentes</Badge>
-                    <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20 px-3 py-1">{porVencer} Por Vencer</Badge>
-                    <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20 px-3 py-1">{vencidas} Vencidas</Badge>
+                {/* Status filter badges (clickeables) */}
+                <div className="flex gap-2 flex-wrap items-center">
+                    <button
+                        type="button"
+                        onClick={() => setStatusFilter(null)}
+                        className={cn(
+                            'inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-all',
+                            statusFilter === null
+                                ? 'bg-primary text-white border-primary shadow-sm'
+                                : 'bg-white text-muted-foreground border-slate-200 hover:border-primary/40'
+                        )}
+                    >
+                        Todos ({selectedInsurer.clients.length})
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setStatusFilter(statusFilter === 'Vigente' ? null : 'Vigente')}
+                        className={cn(
+                            'inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-all',
+                            statusFilter === 'Vigente'
+                                ? 'bg-success text-white border-success shadow-sm'
+                                : 'bg-success/10 text-success border-success/20 hover:bg-success/20'
+                        )}
+                    >
+                        {vigentes} Vigentes
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setStatusFilter(statusFilter === 'Por Vencer' ? null : 'Por Vencer')}
+                        className={cn(
+                            'inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-all',
+                            statusFilter === 'Por Vencer'
+                                ? 'bg-warning text-white border-warning shadow-sm'
+                                : 'bg-warning/10 text-warning border-warning/20 hover:bg-warning/20'
+                        )}
+                    >
+                        {porVencer} Por Vencer
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setStatusFilter(statusFilter === 'Vencida' ? null : 'Vencida')}
+                        className={cn(
+                            'inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold transition-all',
+                            statusFilter === 'Vencida'
+                                ? 'bg-destructive text-white border-destructive shadow-sm'
+                                : 'bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20'
+                        )}
+                    >
+                        {vencidas} Vencidas
+                    </button>
                 </div>
 
                 {/* Table */}
@@ -335,12 +384,13 @@ export default function InsurersPage() {
                     >
                         <CardHeader className="pb-3">
                             <div className="flex items-center gap-4">
-                                <div
-                                    className="flex items-center justify-center w-14 h-14 rounded-lg flex-shrink-0 text-white font-bold text-sm tracking-wide select-none"
-                                    style={{ backgroundColor: insurer.avatarBg }}
-                                >
-                                    {insurer.initials}
-                                </div>
+                                <InsurerLogo
+                                    insurerId={insurer.name}
+                                    name={insurer.name}
+                                    initials={insurer.initials}
+                                    color={insurer.avatarBg}
+                                    size="lg"
+                                />
                                 <div className="flex-1 min-w-0">
                                     <CardTitle className="text-base font-semibold text-primary truncate">{insurer.name}</CardTitle>
                                     <div className="mt-1">

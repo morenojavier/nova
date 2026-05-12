@@ -13,6 +13,7 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
+import { InsurerLogo } from '@/components/ui/insurer-logo'
 import { Search, MoreHorizontal } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -207,12 +208,13 @@ interface InsurerCommission {
 }
 
 const INSURER_COMMISSIONS: InsurerCommission[] = [
-    { name: 'CHUBB',    initials: 'CH', color: 'bg-blue-600',   commissionPct: 15 },
-    { name: 'HDI',      initials: 'HD', color: 'bg-red-500',    commissionPct: 14 },
-    { name: 'Quálitas', initials: 'QU', color: 'bg-green-600',  commissionPct: 12 },
-    { name: 'Mapfre',   initials: 'MA', color: 'bg-violet-600', commissionPct: 18 },
-    { name: 'Zurich',   initials: 'ZU', color: 'bg-sky-600',    commissionPct: 16 },
-    { name: 'AXA',      initials: 'AX', color: 'bg-amber-500',  commissionPct: 13 },
+    { name: 'GNP Seguros', initials: 'GNP', color: '#005F4A', commissionPct: 14 },
+    { name: 'CHUBB',       initials: 'CH',  color: '#002855', commissionPct: 15 },
+    { name: 'HDI',         initials: 'HDI', color: '#006341', commissionPct: 14 },
+    { name: 'Quálitas',    initials: 'QU',  color: '#CC0000', commissionPct: 12 },
+    { name: 'Mapfre',      initials: 'MA',  color: '#E30613', commissionPct: 18 },
+    { name: 'Zurich',      initials: 'ZU',  color: '#003399', commissionPct: 16 },
+    { name: 'AXA',         initials: 'AXA', color: '#00008F', commissionPct: 13 },
 ]
 
 const PRIMA_GOAL = 3_000_000
@@ -302,15 +304,13 @@ function ComisionesTab() {
                     <Card key={s.name} className="overflow-hidden">
                         <CardContent className="p-5">
                             <div className="flex items-start gap-3 mb-4">
-                                <div
-                                    className={cn(
-                                        'flex items-center justify-center w-10 h-10 rounded-lg text-white font-bold text-sm shrink-0',
-                                        s.color
-                                    )}
-                                    aria-hidden="true"
-                                >
-                                    {s.initials}
-                                </div>
+                                <InsurerLogo
+                                    insurerId={s.name}
+                                    name={s.name}
+                                    initials={s.initials}
+                                    color={s.color}
+                                    size="md"
+                                />
                                 <div>
                                     <p className="font-semibold text-foreground leading-tight">
                                         {s.name}

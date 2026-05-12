@@ -526,11 +526,8 @@ export default function SellersPage() {
               <span className="text-sm text-muted-foreground">por pólizas vendidas en abril 2026</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-              {/* 2nd - left */}
-              <PodiumCard seller={top3[1]} pos={2} />
-              {/* 1st - center (scaled up via CSS) */}
               <PodiumCard seller={top3[0]} pos={1} />
-              {/* 3rd - right */}
+              <PodiumCard seller={top3[1]} pos={2} />
               <PodiumCard seller={top3[2]} pos={3} />
             </div>
           </div>
