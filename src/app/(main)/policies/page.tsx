@@ -208,10 +208,10 @@ interface InsurerCommission {
 }
 
 const INSURER_COMMISSIONS: InsurerCommission[] = [
-    { name: 'GNP Seguros', initials: 'GNP', color: '#005F4A', commissionPct: 14 },
+    { name: 'GNP Seguros', initials: 'GNP', color: '#FF6D00', commissionPct: 14 },
     { name: 'CHUBB',       initials: 'CH',  color: '#002855', commissionPct: 15 },
     { name: 'HDI',         initials: 'HDI', color: '#006341', commissionPct: 14 },
-    { name: 'Quálitas',    initials: 'QU',  color: '#CC0000', commissionPct: 12 },
+    { name: 'Quálitas',    initials: 'QU',  color: '#6A0DAD', commissionPct: 12 },
     { name: 'Mapfre',      initials: 'MA',  color: '#E30613', commissionPct: 18 },
     { name: 'Zurich',      initials: 'ZU',  color: '#003399', commissionPct: 16 },
     { name: 'AXA',         initials: 'AXA', color: '#00008F', commissionPct: 13 },

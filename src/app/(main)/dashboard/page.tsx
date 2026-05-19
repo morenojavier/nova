@@ -60,10 +60,10 @@ type Insurer = {
 }
 
 const INSURERS: Insurer[] = [
-    { id: 'gnp', name: 'GNP Seguros', initials: 'GNP', color: '#005F4A', metrics: { prima: 498500, comision: 69790, bonoInicial: 9970, bonoSiniestral: 7478, bonoRenovacion: 14955, bonoCartera: 4985, bonoIntegral: 12463, udi: 5583, intervita: 13958, nova: 6979, polizas: 52 } },
+    { id: 'gnp', name: 'GNP Seguros', initials: 'GNP', color: '#FF6D00', metrics: { prima: 498500, comision: 69790, bonoInicial: 9970, bonoSiniestral: 7478, bonoRenovacion: 14955, bonoCartera: 4985, bonoIntegral: 12463, udi: 5583, intervita: 13958, nova: 6979, polizas: 52 } },
     { id: 'chubb', name: 'CHUBB', initials: 'CH', color: '#002855', metrics: { prima: 425000, comision: 63750, bonoInicial: 8500, bonoSiniestral: 6375, bonoRenovacion: 12750, bonoCartera: 4250, bonoIntegral: 10625, udi: 5100, intervita: 12750, nova: 6375, polizas: 34 } },
     { id: 'hdi', name: 'HDI Seguros', initials: 'HDI', color: '#006341', metrics: { prima: 334200, comision: 46788, bonoInicial: 6684, bonoSiniestral: 5013, bonoRenovacion: 10026, bonoCartera: 3342, bonoIntegral: 8355, udi: 3743, intervita: 9358, nova: 4679, polizas: 28 } },
-    { id: 'qualitas', name: 'Quálitas', initials: 'QU', color: '#CC0000', metrics: { prima: 548700, comision: 71331, bonoInicial: 10974, bonoSiniestral: 8231, bonoRenovacion: 16461, bonoCartera: 5487, bonoIntegral: 13718, udi: 5707, intervita: 14266, nova: 7133, polizas: 61 } },
+    { id: 'qualitas', name: 'Quálitas', initials: 'QU', color: '#6A0DAD', metrics: { prima: 548700, comision: 71331, bonoInicial: 10974, bonoSiniestral: 8231, bonoRenovacion: 16461, bonoCartera: 5487, bonoIntegral: 13718, udi: 5707, intervita: 14266, nova: 7133, polizas: 61 } },
     { id: 'mapfre', name: 'Mapfre', initials: 'MA', color: '#E30613', metrics: { prima: 189400, comision: 22728, bonoInicial: 3788, bonoSiniestral: 2841, bonoRenovacion: 5682, bonoCartera: 1894, bonoIntegral: 4735, udi: 1818, intervita: 4546, nova: 2273, polizas: 19 } },
     { id: 'zurich', name: 'Zurich', initials: 'ZU', color: '#003399', metrics: { prima: 276100, comision: 38654, bonoInicial: 5522, bonoSiniestral: 4142, bonoRenovacion: 8283, bonoCartera: 2761, bonoIntegral: 6903, udi: 3092, intervita: 7731, nova: 3865, polizas: 22 } },
     { id: 'axa', name: 'AXA', initials: 'AXA', color: '#00008F', metrics: { prima: 612300, comision: 97968, bonoInicial: 12246, bonoSiniestral: 9185, bonoRenovacion: 18369, bonoCartera: 6123, bonoIntegral: 15308, udi: 7837, intervita: 19594, nova: 9797, polizas: 45 } },
@@ -247,20 +247,10 @@ function FullTable({
     onSearchChange: (v: string) => void
 }) {
     const [expanded, setExpanded] = useState<Set<string>>(new Set())
-    const [breakdownExpanded, setBreakdownExpanded] = useState<Set<string>>(new Set())
     const [page, setPage] = useState(1)
 
     function toggle(id: string) {
         setExpanded(prev => {
-            const next = new Set(prev)
-            if (next.has(id)) next.delete(id)
-            else next.add(id)
-            return next
-        })
-    }
-
-    function toggleBreakdown(id: string) {
-        setBreakdownExpanded(prev => {
             const next = new Set(prev)
             if (next.has(id)) next.delete(id)
             else next.add(id)
@@ -308,21 +298,23 @@ function FullTable({
                     <TableHeader className="bg-slate-50">
                         <TableRow>
                             <TableHead className="sticky left-0 bg-slate-50 min-w-[220px]">{firstColLabel}</TableHead>
-                            <TableHead className="text-right">Ingreso</TableHead>
                             <TableHead className="text-right">Prima</TableHead>
+                            <TableHead className="text-right">Ingreso</TableHead>
+                            <TableHead className="text-right">Partner</TableHead>
+                            <TableHead className="text-right">NOVA</TableHead>
                             <TableHead className="text-center">Pólizas</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {visible.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={4} className="text-center text-muted-foreground py-8 text-sm">
+                                <TableCell colSpan={6} className="text-center text-muted-foreground py-8 text-sm">
                                     Sin resultados
                                 </TableCell>
                             </TableRow>
                         ) : (
                             visible.map(r => (
-                                <RenderRow key={r.id} row={r} expanded={expanded} toggle={toggle} breakdownExpanded={breakdownExpanded} toggleBreakdown={toggleBreakdown} depth={0} />
+                                <RenderRow key={r.id} row={r} expanded={expanded} toggle={toggle} depth={0} />
                             ))
                         )}
                     </TableBody>
@@ -366,18 +358,15 @@ function FullTable({
 }
 
 function RenderRow({
-    row, expanded, toggle, breakdownExpanded, toggleBreakdown, depth,
+    row, expanded, toggle, depth,
 }: {
     row: RowData
     expanded: Set<string>
     toggle: (id: string) => void
-    breakdownExpanded: Set<string>
-    toggleBreakdown: (id: string) => void
     depth: number
 }) {
     const hasChildren = !!row.children && row.children.length > 0
     const isOpen = expanded.has(row.id)
-    const isBreakdownOpen = breakdownExpanded.has(row.id)
     const ingresoTotal = sumIngreso(row.metrics)
 
     return (
@@ -403,44 +392,14 @@ function RenderRow({
                         <span className="font-medium text-primary text-sm">{row.name}</span>
                     </div>
                 </TableCell>
-                <TableCell
-                    className="text-right cursor-pointer select-none"
-                    onClick={(e) => { e.stopPropagation(); toggleBreakdown(row.id) }}
-                >
-                    <div className="flex items-center justify-end gap-1.5">
-                        <span className="font-bold text-primary">{formatMXN(ingresoTotal)}</span>
-                        <ChevronDown className={cn('w-3.5 h-3.5 text-muted-foreground transition-transform shrink-0', isBreakdownOpen && 'rotate-180')} />
-                    </div>
-                </TableCell>
                 <TableCell className="text-right font-semibold text-primary">{formatMXN(row.metrics.prima)}</TableCell>
+                <TableCell className="text-right font-bold text-primary">{formatMXN(ingresoTotal)}</TableCell>
+                <TableCell className="text-right font-semibold text-primary">{formatMXN(row.metrics.intervita)}</TableCell>
+                <TableCell className="text-right font-semibold text-primary">{formatMXN(row.metrics.nova)}</TableCell>
                 <TableCell className="text-center font-medium">{row.metrics.polizas}</TableCell>
             </TableRow>
-            {isBreakdownOpen && (
-                <TableRow className="bg-slate-50 hover:bg-slate-50">
-                    <TableCell colSpan={4} className="py-3 px-6">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-3">
-                            {[
-                                { label: 'Comisión', value: row.metrics.comision },
-                                { label: 'Bono Inicial', value: row.metrics.bonoInicial },
-                                { label: 'Bono Siniestral', value: row.metrics.bonoSiniestral },
-                                { label: 'Bono Renovación', value: row.metrics.bonoRenovacion },
-                                { label: 'Bono Cartera', value: row.metrics.bonoCartera },
-                                { label: 'Bono Integral', value: row.metrics.bonoIntegral },
-                                { label: 'UDI', value: row.metrics.udi },
-                                { label: 'Partner', value: row.metrics.intervita, accent: true },
-                                { label: 'NOVA', value: row.metrics.nova, accent: true },
-                            ].map(item => (
-                                <div key={item.label} className={cn('flex flex-col gap-0.5', item.accent && 'border-l-2 border-primary/30 pl-2')}>
-                                    <span className={cn('text-[10px] font-medium uppercase tracking-wide', item.accent ? 'text-primary' : 'text-muted-foreground')}>{item.label}</span>
-                                    <span className={cn('text-sm font-semibold', item.accent ? 'text-primary' : 'text-primary')}>{formatMXN(item.value)}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </TableCell>
-                </TableRow>
-            )}
             {isOpen && row.children?.map(c => (
-                <RenderRow key={c.id} row={c} expanded={expanded} toggle={toggle} breakdownExpanded={breakdownExpanded} toggleBreakdown={toggleBreakdown} depth={depth + 1} />
+                <RenderRow key={c.id} row={c} expanded={expanded} toggle={toggle} depth={depth + 1} />
             ))}
         </>
     )

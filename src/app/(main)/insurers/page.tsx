@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
-import { ArrowLeft, Search, MoreHorizontal, FileText, Users, TrendingUp, DollarSign, Wallet, Gift } from 'lucide-react'
+import { ArrowLeft, Search, MoreHorizontal, FileText, Users, TrendingUp, DollarSign, Wallet, Gift, Handshake, Sparkles } from 'lucide-react'
 import { InsurerLogo } from '@/components/ui/insurer-logo'
 import { cn } from '@/lib/utils'
 
@@ -30,6 +30,9 @@ type Insurer = {
     policies: number
     renewalRate: number
     premium: number
+    income: number
+    partner: number
+    nova: number
     commission: number
     bonus: number
     clients: InsurerClient[]
@@ -39,8 +42,8 @@ const formatMXN = (n: number) => '$' + n.toLocaleString('es-MX') + ' MXN'
 
 const insurers: Insurer[] = [
     {
-        id: '7', name: 'GNP Seguros', initials: 'GNP', avatarBg: '#005F4A', policies: 52, renewalRate: 88,
-        premium: 498500, commission: 69790, bonus: 24925,
+        id: '7', name: 'GNP Seguros', initials: 'GNP', avatarBg: '#FF6D00', policies: 52, renewalRate: 88,
+        premium: 498500, income: 94715, partner: 66300, nova: 28415, commission: 69790, bonus: 24925,
         clients: [
             { id: 'g1', client: 'Alejandro Torres Morales', policyNumber: 'GNP-2025-001847', planType: 'Auto Amplia', vehicle: 'Honda Civic 2023', premium: '$12,500', startDate: '15/04/2025', endDate: '15/04/2026', status: 'Vigente' },
             { id: 'g2', client: 'María Fernández Jiménez', policyNumber: 'GNP-2025-009834', planType: 'Auto Base', vehicle: 'VW Jetta 2021', premium: '$9,200', startDate: '05/05/2025', endDate: '05/05/2026', status: 'Vigente' },
@@ -52,7 +55,7 @@ const insurers: Insurer[] = [
     },
     {
         id: '1', name: 'CHUBB', initials: 'CH', avatarBg: '#002855', policies: 34, renewalRate: 91,
-        premium: 425000, commission: 63750, bonus: 21250,
+        premium: 425000, income: 85000, partner: 59500, nova: 25500, commission: 63750, bonus: 21250,
         clients: [
             { id: 'c1', client: 'Roberto Gómez Salinas', policyNumber: 'CH-2025-004521', planType: 'Auto Amplia', vehicle: 'Nissan Versa 2024', premium: '$11,622', startDate: '01/03/2025', endDate: '01/03/2026', status: 'Vigente' },
             { id: 'c2', client: 'Laura Méndez Ríos', policyNumber: 'CH-2025-004530', planType: 'Auto Amplia Plus', vehicle: 'Toyota Corolla 2023', premium: '$14,800', startDate: '15/02/2025', endDate: '15/02/2026', status: 'Vigente' },
@@ -62,7 +65,7 @@ const insurers: Insurer[] = [
     },
     {
         id: '2', name: 'HDI Seguros', initials: 'HDI', avatarBg: '#006341', policies: 28, renewalRate: 87,
-        premium: 334200, commission: 46788, bonus: 16710,
+        premium: 334200, income: 63498, partner: 44449, nova: 19049, commission: 46788, bonus: 16710,
         clients: [
             { id: 'h1', client: 'Jorge Villanueva Paz', policyNumber: 'HDI-2025-006603', planType: 'Gastos Médicos', vehicle: 'N/A', premium: '$22,750', startDate: '18/01/2025', endDate: '18/01/2026', status: 'Vigente' },
             { id: 'h2', client: 'Ana Martínez Herrera', policyNumber: 'HDI-2025-007412', planType: 'Auto Amplia Plus', vehicle: 'Mazda 3 2023', premium: '$15,800', startDate: '10/03/2025', endDate: '10/03/2026', status: 'Vigente' },
@@ -70,8 +73,8 @@ const insurers: Insurer[] = [
         ],
     },
     {
-        id: '3', name: 'Quálitas', initials: 'QU', avatarBg: '#CC0000', policies: 61, renewalRate: 83,
-        premium: 548700, commission: 71331, bonus: 27435,
+        id: '3', name: 'Quálitas', initials: 'QU', avatarBg: '#6A0DAD', policies: 61, renewalRate: 83,
+        premium: 548700, income: 98766, partner: 69136, nova: 29630, commission: 71331, bonus: 27435,
         clients: [
             { id: 'q1', client: 'Roberto Gómez Salinas', policyNumber: 'QUA-2025-002156', planType: 'Auto Base', vehicle: 'Nissan Versa 2022', premium: '$8,900', startDate: '22/06/2025', endDate: '22/06/2026', status: 'Vigente' },
             { id: 'q2', client: 'Sofía Delgado Ríos', policyNumber: 'QUA-2024-008390', planType: 'Auto Amplia', vehicle: 'Toyota Corolla 2023', premium: '$11,100', startDate: '30/04/2024', endDate: '30/04/2025', status: 'Por Vencer' },
@@ -82,7 +85,7 @@ const insurers: Insurer[] = [
     },
     {
         id: '4', name: 'Mapfre', initials: 'MA', avatarBg: '#E30613', policies: 19, renewalRate: 78,
-        premium: 189400, commission: 22728, bonus: 9470,
+        premium: 189400, income: 32198, partner: 22539, nova: 9659, commission: 22728, bonus: 9470,
         clients: [
             { id: 'm1', client: 'Lucía Reyes Castillo', policyNumber: 'MAP-2025-004871', planType: 'Vida Temporaria', vehicle: 'N/A', premium: '$6,300', startDate: '01/02/2025', endDate: '01/02/2026', status: 'Vigente' },
             { id: 'm2', client: 'Construcciones Vargas e Hijos', policyNumber: 'MAP-2025-001045', planType: 'Responsabilidad Civil', vehicle: 'N/A', premium: '$34,600', startDate: '12/09/2025', endDate: '12/09/2026', status: 'Vigente' },
@@ -91,7 +94,7 @@ const insurers: Insurer[] = [
     },
     {
         id: '5', name: 'Zurich', initials: 'ZU', avatarBg: '#003399', policies: 22, renewalRate: 89,
-        premium: 276100, commission: 38654, bonus: 13805,
+        premium: 276100, income: 52459, partner: 36721, nova: 15738, commission: 38654, bonus: 13805,
         clients: [
             { id: 'z1', client: 'Elena Torres Guzmán', policyNumber: 'ZUR-2025-001230', planType: 'Auto Amplia Plus', vehicle: 'Toyota Corolla Hybrid 2024', premium: '$16,400', startDate: '08/03/2025', endDate: '08/03/2026', status: 'Vigente' },
             { id: 'z2', client: 'Miguel Ángel Rojas', policyNumber: 'ZUR-2025-001287', planType: 'Auto Base', vehicle: 'Hyundai Accent 2023', premium: '$9,100', startDate: '20/02/2025', endDate: '20/02/2026', status: 'Vigente' },
@@ -100,7 +103,7 @@ const insurers: Insurer[] = [
     },
     {
         id: '6', name: 'AXA', initials: 'AXA', avatarBg: '#00008F', policies: 45, renewalRate: 92,
-        premium: 612300, commission: 97968, bonus: 30615,
+        premium: 612300, income: 128583, partner: 90008, nova: 38575, commission: 97968, bonus: 30615,
         clients: [
             { id: 'a1', client: 'Empresa Logistics SA de CV', policyNumber: 'AXA-2024-003291', planType: 'Flotilla Plus', vehicle: '8 unidades', premium: '$48,000', startDate: '01/01/2024', endDate: '31/12/2024', status: 'Vencida' },
             { id: 'a2', client: 'Transportes Rápidos del Norte', policyNumber: 'AXA-2023-011220', planType: 'Equipo Pesado', vehicle: '15 unidades', premium: '$62,400', startDate: '15/07/2023', endDate: '15/07/2024', status: 'Vencida' },
@@ -380,7 +383,7 @@ export default function InsurersPage() {
                 {insurers.map((insurer) => (
                     <Card
                         key={insurer.id}
-                        className="shadow-sm hover:shadow-md transition-all duration-200 border-b-4 border-b-transparent hover:border-b-accent"
+                        className="shadow-sm hover:shadow-md transition-all duration-200 hover:border-accent"
                     >
                         <CardHeader className="pb-3">
                             <div className="flex items-center gap-4">
@@ -411,7 +414,6 @@ export default function InsurersPage() {
                                 </div>
                             </div>
 
-                            {/* Financials */}
                             <div className="space-y-1.5 border-t pt-3">
                                 <div className="flex items-center justify-between text-sm">
                                     <div className="flex items-center gap-1.5 text-muted-foreground">
@@ -423,16 +425,23 @@ export default function InsurersPage() {
                                 <div className="flex items-center justify-between text-sm">
                                     <div className="flex items-center gap-1.5 text-muted-foreground">
                                         <Wallet className="w-3.5 h-3.5 text-success" />
-                                        <span>Comisión</span>
+                                        <span>Ingreso</span>
                                     </div>
-                                    <span className="font-semibold text-primary">{formatMXN(insurer.commission)}</span>
+                                    <span className="font-semibold text-primary">{formatMXN(insurer.income)}</span>
                                 </div>
                                 <div className="flex items-center justify-between text-sm">
                                     <div className="flex items-center gap-1.5 text-muted-foreground">
-                                        <Gift className="w-3.5 h-3.5 text-warning" />
-                                        <span>Bono</span>
+                                        <Handshake className="w-3.5 h-3.5 text-warning" />
+                                        <span>Partner</span>
                                     </div>
-                                    <span className="font-semibold text-primary">{formatMXN(insurer.bonus)}</span>
+                                    <span className="font-semibold text-primary">{formatMXN(insurer.partner)}</span>
+                                </div>
+                                <div className="flex items-center justify-between text-sm">
+                                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                                        <Sparkles className="w-3.5 h-3.5 text-primary" />
+                                        <span>NOVA</span>
+                                    </div>
+                                    <span className="font-semibold text-primary">{formatMXN(insurer.nova)}</span>
                                 </div>
                             </div>
 

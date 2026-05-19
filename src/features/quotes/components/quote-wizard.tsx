@@ -112,7 +112,7 @@ const mockQuotes: InsuranceQuote[] = [
         },
     },
     {
-        id: 'qualitas-1', insurer: 'Quálitas', initials: 'Q', color: '#CC0000', msiMonths: 6, recommended: false,
+        id: 'qualitas-1', insurer: 'Quálitas', initials: 'Q', color: '#6A0DAD', msiMonths: 6, recommended: false,
         plans: {
             amplio: { annualPremium: 9850, coverages: 6, assists: 8 },
             limitado: { annualPremium: 7200, coverages: 4, assists: 5 },
@@ -144,7 +144,7 @@ const mockQuotes: InsuranceQuote[] = [
         },
     },
     {
-        id: 'gnp-1', insurer: 'GNP Seguros', initials: 'GNP', color: '#005F4A', msiMonths: 12, recommended: false,
+        id: 'gnp-1', insurer: 'GNP Seguros', initials: 'GNP', color: '#FF6D00', msiMonths: 12, recommended: false,
         plans: {
             amplio: { annualPremium: 10200, coverages: 8, assists: 11 },
             limitado: { annualPremium: 7800, coverages: 5, assists: 7 },
